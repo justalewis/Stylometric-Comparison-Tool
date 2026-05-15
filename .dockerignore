@@ -1,0 +1,17 @@
+.git
+.gitignore
+.venv
+venv
+env
+__pycache__
+**/__pycache__
+*.pyc
+*.pyo
+.idea
+.vscode
+.claude
+.DS_Store
+Thumbs.db
+fly.toml
+Dockerfile
+.dockerignore
