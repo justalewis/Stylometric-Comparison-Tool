@@ -25,13 +25,22 @@ For each text, the tool computes a profile across these dimensions:
 | **2. Syntactic** | Sentence length distribution · Sentence-opening patterns (6 categories) · Coordination vs. subordination · Punctuation rates |
 | **3. Discourse** | Paragraph structure and topic-sentence position · Transition strategy · Evidence-to-claim sequencing · Metadiscourse |
 | **4. Register** | Overall register classification · Register consistency across paragraphs · Pronoun profile |
+| **6. AI-writing signs** *(profile-only)* | 8 metrics drawn from Wikipedia's [Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing): AI vocabulary density · Promotional phrasing · Significance/legacy emphasis · Vague attribution · Negative parallelisms · Participial pseudo-analysis · Rule of three · Conclusion formulas |
 
-It then runs fifteen pairwise comparators and rates each as **Strong
-Match**, **Partial Match**, **No Match**, or **Indeterminate**, with a brief
-explanation. The output includes the per-text profiles, a comparison table,
-and a narrative summary.
+It then runs fifteen pairwise comparators (sections 1-4) and rates each as
+**Strong Match**, **Partial Match**, **No Match**, or **Indeterminate**,
+with a brief explanation. Section 6 is descriptive only — counts per
+500 words alongside example hits — to keep the framing honest about what
+these markers do and don't tell you.
+
+The output includes the per-text profiles, a comparison table, and a
+narrative summary. In the browser, every key term carries a dotted
+underline; hovering shows a plain-language definition pulled from the
+glossary.
 
 Full feature-by-feature methodology: [docs/methodology.md](docs/methodology.md).
+AI-writing-signs catalog and Wikipedia crosswalk: [docs/ai-signs.md](docs/ai-signs.md).
+Plain-language glossary of every term: [docs/glossary.md](docs/glossary.md).
 Original specification: [docs/spec.md](docs/spec.md).
 
 ---
@@ -170,6 +179,8 @@ stylometric-compare/
 │   ├── discourse.py             Section 3 (paragraphs, transitions, evidence, metadiscourse)
 │   ├── register.py              Section 4 (classification, consistency, pronouns)
 │   ├── compare.py               Section 5 (15 feature comparators + narrative)
+│   ├── aitext_signs.py          Section 6 (8 AI-writing-signs metrics)
+│   ├── glossary.py              Plain-language term definitions
 │   ├── markdown_export.py       Markdown rendering
 │   └── extract.py               File-upload text extraction
 ├── templates/
@@ -193,7 +204,15 @@ Deeper code walkthrough in [docs/architecture.md](docs/architecture.md).
 
 - **[Methodology](docs/methodology.md)** — every feature explained: what
   the spec asked for, what the code does, how the comparison rating is
-  computed, and what each rating means.
+  computed, and what each rating means. Includes Wikipedia "Signs of AI
+  writing" crosswalk for the original 15 features.
+- **[AI-writing signs](docs/ai-signs.md)** — the 8 new profile-only
+  metrics drawn from Wikipedia's catalog: detection rules, per-metric
+  word lists, limitations, calibration guidance, and Wikipedia source
+  links for each sign.
+- **[Glossary](docs/glossary.md)** — plain-language definitions of every
+  term used in the report. Same content is exposed as hover tooltips
+  on dotted-underlined terms in the browser.
 - **[Architecture](docs/architecture.md)** — module map, data flow,
   dependency rationale, and conventions.
 - **[Deployment](docs/deployment.md)** — Fly.io operations: provisioning,

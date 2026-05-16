@@ -16,11 +16,17 @@ from flask import Flask, Response, render_template, request
 
 from analyzer import compare as run_compare
 from analyzer.extract import ExtractionError, UnsupportedFileError, extract_text
+from analyzer.glossary import GLOSSARY
 from analyzer.markdown_export import render_markdown
 
 
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 2 * 1024 * 1024  # 2 MB max submission
+
+
+@app.context_processor
+def _inject_glossary():
+    return {"glossary": GLOSSARY}
 
 _BASIC_AUTH_USER = os.environ.get("STYLOMETRIC_USERNAME", "user")
 _BASIC_AUTH_PASS = os.environ.get("STYLOMETRIC_PASSWORD", "")

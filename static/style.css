@@ -312,6 +312,130 @@ details > * { margin-top: 0.3rem; }
   color: var(--muted);
 }
 
+/* -- Inline glossary tooltips -- */
+.gloss {
+  border-bottom: 1px dotted var(--accent);
+  cursor: help;
+  position: relative;
+}
+.gloss:focus { outline: none; }
+.gloss::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 0.4rem);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--ink);
+  color: var(--paper);
+  padding: 0.55rem 0.75rem;
+  border-radius: 4px;
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  font-size: 0.82rem;
+  font-style: normal;
+  font-weight: normal;
+  text-transform: none;
+  letter-spacing: normal;
+  line-height: 1.45;
+  white-space: normal;
+  width: max-content;
+  max-width: 320px;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.1s ease-in;
+  pointer-events: none;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+.gloss::before {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: var(--ink);
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.1s ease-in;
+  pointer-events: none;
+  z-index: 100;
+}
+.gloss:hover::after, .gloss:focus::after,
+.gloss:hover::before, .gloss:focus::before {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* -- AI-writing-signs section -- */
+.ai-signs {
+  background: #faf3e3;
+  border: 1px solid var(--accent-soft);
+  border-radius: 4px;
+  padding: 1rem 1.25rem;
+  margin: 2rem 0;
+}
+.ai-signs h2 {
+  margin-top: 0;
+  border-bottom-color: var(--accent-soft);
+}
+.ai-signs .ai-disclaimer {
+  font-size: 0.88rem;
+  font-style: italic;
+  color: var(--muted);
+  margin: 0.25rem 0 1rem;
+}
+.ai-signs .ai-headline {
+  font-size: 1rem;
+  margin: 0.5rem 0 1rem;
+}
+.ai-signs .ai-headline strong { color: var(--accent); }
+
+.ai-signs-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+.ai-metric {
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 0.75rem 0.9rem;
+}
+.ai-metric h4 {
+  margin: 0 0 0.35rem;
+  font-size: 0.95rem;
+  color: var(--accent);
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+.ai-metric h4 .rate {
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--ink);
+  background: #f3ecdc;
+  padding: 0.05rem 0.45rem;
+  border-radius: 3px;
+}
+.ai-metric h4 .rate.zero { color: var(--muted); background: transparent; }
+.ai-metric h4 a.wiki-link {
+  font-size: 0.78rem;
+  color: var(--muted);
+  text-decoration: none;
+  font-weight: normal;
+}
+.ai-metric h4 a.wiki-link:hover { color: var(--accent); text-decoration: underline; }
+.ai-metric ul { padding-left: 1.1rem; margin: 0.3rem 0; font-size: 0.88rem; }
+.ai-metric .ai-example {
+  margin: 0.3rem 0;
+  padding: 0.35rem 0.55rem;
+  background: #f3ecdc;
+  border-left: 2px solid var(--accent-soft);
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
 footer {
   margin-top: 3rem;
   padding-top: 1.25rem;

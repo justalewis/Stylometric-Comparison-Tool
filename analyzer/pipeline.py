@@ -7,9 +7,9 @@ from functools import lru_cache
 import spacy
 from spacy.language import Language
 
-from . import lexical, syntactic, discourse, register
+from . import aitext_signs, discourse, lexical, register, syntactic
 from .compare import compare as _compare
-from .preprocess import strip_quotes, split_paragraphs, QuoteReport
+from .preprocess import QuoteReport, split_paragraphs, strip_quotes
 
 
 _SPACY_MODEL = "en_core_web_sm"
@@ -43,6 +43,7 @@ def analyze(text: str, topic: str | None = None, label: str = "Text") -> dict:
     syn = syntactic.analyze(doc)
     dis = discourse.analyze(doc, paragraphs, paragraph_docs)
     reg = register.analyze(doc, paragraph_docs, lex, syn)
+    ai_signs = aitext_signs.analyze(doc)
 
     return {
         "label": label,
@@ -58,6 +59,7 @@ def analyze(text: str, topic: str | None = None, label: str = "Text") -> dict:
         "syntactic": syn,
         "discourse": dis,
         "register": reg,
+        "ai_signs": ai_signs,
     }
 
 

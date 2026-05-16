@@ -118,6 +118,49 @@ def _section_register(p: dict, out: StringIO) -> None:
     out.write(f"  - Dominant category: {pr['dominant_category']}\n\n")
 
 
+def _section_ai_signs(p: dict, out: StringIO) -> None:
+    ai = p.get("ai_signs")
+    if not ai:
+        return
+    out.write("### AI-Writing Signs\n\n")
+    out.write(
+        f"Total markers: **{ai['total_markers_raw']}** "
+        f"({ai['total_markers_per_500']}/500w). "
+        f"Catalog: <{ai['wikipedia_url']}>.\n\n"
+    )
+    labels = {
+        "ai_vocabulary":         "AI vocabulary density",
+        "promotional":           "Promotional phrasing",
+        "significance":          "Significance emphasis",
+        "vague_attribution":     "Vague attribution",
+        "negative_parallelisms": "Negative parallelisms",
+        "participial_tails":     "Participial pseudo-analysis",
+        "rule_of_three":         "Rule of three",
+        "conclusion_formulas":   "Conclusion formulas",
+    }
+    for key, label in labels.items():
+        m = ai["metrics"][key]
+        out.write(
+            f"- **{label}**: {m['raw_count']} raw, "
+            f"{m['per_500']}/500w "
+            f"([↗ wiki]({m['wikipedia_section']}))\n"
+        )
+        if m.get("top_hits"):
+            top = ", ".join(f"`{w}` ({c})" for w, c in m["top_hits"][:5])
+            out.write(f"  - top: {top}\n")
+        if m.get("top_starters"):
+            top = ", ".join(f"`{w}` ({c})" for w, c in m["top_starters"][:5])
+            out.write(f"  - top starters: {top}\n")
+        if m.get("examples"):
+            for ex in m["examples"][:2]:
+                if isinstance(ex, dict):
+                    if "items" in ex:
+                        out.write(f"  - example triplet: `{' / '.join(ex['items'])}`\n")
+                    elif ex.get("sentence"):
+                        out.write(f"  - example: \"{ex['sentence'][:160]}\"\n")
+    out.write("\n")
+
+
 def render_markdown(result: dict) -> str:
     """Render the full comparison result as Markdown."""
     out = StringIO()
@@ -131,6 +174,7 @@ def render_markdown(result: dict) -> str:
     _section_syntactic(result["profile_a"], out)
     _section_discourse(result["profile_a"], out)
     _section_register(result["profile_a"], out)
+    _section_ai_signs(result["profile_a"], out)
 
     out.write("## Text B Profile\n\n")
     _section_meta(result["profile_b"], out)
@@ -138,6 +182,7 @@ def render_markdown(result: dict) -> str:
     _section_syntactic(result["profile_b"], out)
     _section_discourse(result["profile_b"], out)
     _section_register(result["profile_b"], out)
+    _section_ai_signs(result["profile_b"], out)
 
     out.write("## Comparative Summary\n\n")
     out.write("| Feature | Text A | Text B | Rating | Explanation |\n")

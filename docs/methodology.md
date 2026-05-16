@@ -656,6 +656,66 @@ convention; it has no special statistical meaning, only readability.
 
 ---
 
+---
+
+## Section 6 — AI-writing signs (profile-only)
+
+Eight additional metrics, drawn from Wikipedia's
+[Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing)
+catalog, describe stylistic patterns commonly observed in
+large-language-model output. They appear in the per-text profile but
+are **not** part of the comparative summary table — they are
+descriptive markers, not comparison features. The eight:
+
+| Metric | What it tracks | Wikipedia source |
+|---|---|---|
+| AI vocabulary density | `delve`, `tapestry`, `underscore`, `pivotal`, `vibrant`, etc., across three time-stratified lists | [link](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing#High_density_of_%22AI_vocabulary%22_words) |
+| Promotional phrasing | `nestled in the heart of`, `boasts a`, `diverse array`, `renowned for` | [link](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing#Promotional_and_advertisement-like_language) |
+| Significance / legacy emphasis | `testament to`, `pivotal role`, `evolving landscape`, `underscores its importance` | [link](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing#Undue_emphasis_on_significance,_legacy,_and_broader_trends) |
+| Vague attribution | `experts argue`, `industry reports`, `several sources`, `leading scholars` | [link](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing#Vague_attributions_and_overgeneralization_of_opinions) |
+| Negative parallelisms | `not just X but Y`, `not only X but also Y`, `it is not X, it is Y` | [link](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing#Not_just_X,_but_also_Y) |
+| Participial pseudo-analysis | sentences ending in `, highlighting...` / `, ensuring...` clauses | [link](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing#Superficial_analyses) |
+| Rule of three | three-item parallel lists with shared POS | [link](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing#Rule_of_three) |
+| Conclusion formulas | `despite its...`, `future outlook`, `looking ahead`, `in conclusion` | [link](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing#Outline-like_conclusions_about_challenges_and_future_prospects) |
+
+Each metric reports raw count, per-500-word rate, top hits, and (for
+the syntactic ones) example sentences. The section also reports a
+**total markers** headline — the sum across the eight, normalized
+per 500 words — as a one-glance measure of how many AI-writing
+patterns the text exhibits.
+
+**Important framing.** These are descriptive markers, not diagnostic
+tests. Humans use every one of these patterns; the Wikipedia page
+itself states that no single sign is determinative. The intended use
+is calibration (compare against your own baseline of known-human
+writing) or comparison (Text A versus Text B). Full methodology,
+per-metric word lists, detection rules, and limitations are in
+[ai-signs.md](ai-signs.md).
+
+---
+
+## Where the existing 15 features cross-reference Wikipedia
+
+Several of the original features partially overlap with signs from
+the Wikipedia catalog. The relationships:
+
+| Tool feature | Related Wikipedia sign |
+|---|---|
+| 1.1 TTR | [Lexical diversity / elegant variation](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing#Lexical_diversity/elegant_variation) — high TTR can suggest forced synonym variation, though the relationship is weak and length-sensitive |
+| 1.4 Hedges / Intensifiers | "It's important to note", "It is worth noting" overlap with Wikipedia's stock-phrase markers; we count these in the formal-hedge and metadiscourse buckets |
+| 2.4 Punctuation (em dashes) | [Overuse of em dashes](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing#Overuse_of_em_dashes) — our per-500w em-dash rate is the same measurement |
+| 3.2 Transitions | Stock transitional phrases (`Furthermore`, `Moreover`, `In conclusion`) overlap with Wikipedia's "AI vocabulary" and conclusion-formula categories |
+| 3.4 Metadiscourse | Textual metadiscourse phrases (`In this essay I will`, `To summarize`) overlap with Wikipedia's conclusion-formula and outline-section signs |
+| 4.2 Register Consistency | [Pronounced shift in writing style](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing#Pronounced_shift_in_writing_style) — our consistency check across paragraphs catches the strongest cases |
+
+The AI-signs section (§6) and the existing 15 features are
+deliberately complementary: the 15 features are general stylistic
+descriptors useful for any comparison; the 8 AI-signs metrics are
+the subset of LLM-output markers that can be cleanly
+operationalized from running prose.
+
+---
+
 ## What the tool does not do
 
 For the things this tool intentionally avoids — AI detection,

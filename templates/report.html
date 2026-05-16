@@ -7,6 +7,20 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+
+{# ----------------------------------------------------------------------
+   Gloss macro: wrap a piece of text in a tooltip-bearing span if the
+   glossary has an entry for `term`. If `label` is omitted, the term
+   itself is rendered. Tooltips show the plain-language definition on
+   hover / keyboard focus (see .gloss in style.css).
+   ---------------------------------------------------------------------- #}
+{% macro gloss(term, label=None) -%}
+  {%- set definition = glossary.get(term) -%}
+  {%- if definition -%}
+    <span class="gloss" tabindex="0" data-tooltip="{{ definition }}">{{ label or term }}</span>
+  {%- else -%}{{ label or term }}{%- endif -%}
+{%- endmacro %}
+
   <div class="container wide">
     <header>
       <h1>Stylometric Comparison — Report</h1>
@@ -21,6 +35,9 @@
           <button type="submit" class="secondary small">Download as Markdown</button>
         </form>
       </nav>
+      <p class="muted" style="margin-top: 0.5rem; font-size: 0.85rem;">
+        Hover any dotted-underlined term for a plain-language definition.
+      </p>
     </header>
 
     {# --- Comparative summary first --- #}
@@ -28,7 +45,8 @@
       <h2>Comparative Summary</h2>
       <div class="tallies">
         {% for k, v in result.comparison.counts.items() %}
-          <span class="tally tally-{{ k|replace(' ', '-')|lower }}">{{ v }} {{ k }}</span>
+          <span class="tally tally-{{ k|replace(' ', '-')|lower }}" tabindex="0"
+                data-tooltip="{{ glossary.get(k, '') }}">{{ v }} {{ k }}</span>
         {% endfor %}
       </div>
 
@@ -48,7 +66,12 @@
               <td class="feat">{{ row.feature }}</td>
               <td>{{ row.a }}</td>
               <td>{{ row.b }}</td>
-              <td><span class="rating rating-{{ row.rating|replace(' ', '-')|lower }}">{{ row.rating }}</span></td>
+              <td>
+                <span class="rating rating-{{ row.rating|replace(' ', '-')|lower }}"
+                      tabindex="0" data-tooltip="{{ glossary.get(row.rating, '') }}">
+                  {{ row.rating }}
+                </span>
+              </td>
               <td class="expl">{{ row.explanation }}</td>
             </tr>
           {% endfor %}
@@ -71,25 +94,26 @@
             <li>Word count: {{ p.meta.word_count }}</li>
             <li>Paragraphs: {{ p.meta.paragraph_count }}</li>
             {% if p.meta.quoted_spans %}
-              <li>Quoted material removed: {{ p.meta.quoted_spans }} spans
+              <li>{{ gloss('Quoted material') }} removed: {{ p.meta.quoted_spans }} spans
                 ({{ p.meta.quoted_word_count }} words,
                 {{ '%.1f' % (p.meta.quoted_ratio * 100) }}% of original)</li>
             {% endif %}
             {% if p.meta.small_sample_warning %}
-              <li class="warn">⚠ Sample below 250 words; results may be unreliable.</li>
+              <li class="warn">⚠ {{ gloss('Sample size', 'Sample below 250 words') }}; results may be unreliable.</li>
             {% endif %}
           </ul>
 
           <h3>Lexical</h3>
           <ul>
-            <li><strong>TTR:</strong>
+            <li><strong>{{ gloss('TTR') }}:</strong>
               {{ '%.3f' % p.lexical.ttr.ratio }}
-              ({{ p.lexical.ttr.types }} types / {{ p.lexical.ttr.tokens }} tokens)
+              ({{ p.lexical.ttr.types }} {{ gloss('Type', 'types') }} /
+               {{ p.lexical.ttr.tokens }} {{ gloss('Token', 'tokens') }})
             </li>
-            <li><strong>Latinate/Germanic:</strong>
+            <li><strong>{{ gloss('Latinate/Germanic ratio', 'Latinate/Germanic') }}:</strong>
               ratio {{ '%.2f' % p.lexical.latinate_germanic.latinate_ratio }}
-              ({{ p.lexical.latinate_germanic.latinate_count }} Latinate /
-               {{ p.lexical.latinate_germanic.germanic_count }} Germanic)
+              ({{ p.lexical.latinate_germanic.latinate_count }} {{ gloss('Latinate') }} /
+               {{ p.lexical.latinate_germanic.germanic_count }} {{ gloss('Germanic') }})
               {% if p.lexical.latinate_germanic.latinate_top %}
                 <details><summary>top Latinate</summary>
                   <code>{{ p.lexical.latinate_germanic.latinate_top|join(', ') }}</code>
@@ -101,16 +125,16 @@
                 </details>
               {% endif %}
             </li>
-            <li><strong>Habitual words:</strong>
+            <li><strong>{{ gloss('Pet word', 'Habitual words') }}:</strong>
               {% if p.lexical.pet_words.habitual_words %}
                 <ul class="sub">
                   {% for w, c, ex in p.lexical.pet_words.habitual_words[:8] %}
-                    <li><code>{{ w }}</code> ({{ c }}×){% if ex %} — “{{ ex[:120] }}{% if ex|length > 120 %}…{% endif %}”{% endif %}</li>
+                    <li><code>{{ w }}</code> ({{ c }}×){% if ex %} — "{{ ex[:120] }}{% if ex|length > 120 %}…{% endif %}"{% endif %}</li>
                   {% endfor %}
                 </ul>
               {% else %}<em>none flagged</em>{% endif %}
             </li>
-            <li><strong>Habitual phrases:</strong>
+            <li><strong>{{ gloss('Habitual phrase', 'Habitual phrases') }}:</strong>
               {% if p.lexical.pet_words.habitual_phrases %}
                 <ul class="sub">
                   {% for ph, c, ex in p.lexical.pet_words.habitual_phrases[:5] %}
@@ -119,7 +143,7 @@
                 </ul>
               {% else %}<em>none flagged</em>{% endif %}
             </li>
-            <li><strong>Hedges &amp; intensifiers:</strong>
+            <li><strong>{{ gloss('Hedge', 'Hedges') }} &amp; {{ gloss('Intensifier', 'intensifiers') }}:</strong>
               informal {{ p.lexical.hedges.informal_per_500 }}/500w,
               intensifiers {{ p.lexical.hedges.intensifier_per_500 }}/500w,
               formal {{ p.lexical.hedges.formal_per_500 }}/500w
@@ -129,11 +153,11 @@
 
           <h3>Syntactic</h3>
           <ul>
-            <li><strong>Sentence length:</strong>
+            <li><strong>{{ gloss('Sentence length') }}:</strong>
               {{ p.syntactic.sentence_length.count }} sentences,
               mean {{ p.syntactic.sentence_length.mean }},
               median {{ p.syntactic.sentence_length.median }},
-              SD {{ p.syntactic.sentence_length.stdev }}
+              {{ gloss('Standard deviation', 'SD') }} {{ p.syntactic.sentence_length.stdev }}
               <details><summary>buckets</summary>
                 {% for label, n in p.syntactic.sentence_length.buckets.items() %}
                   <span class="bucket">{{ label }}: {{ n }}</span>
@@ -142,40 +166,41 @@
               {% if p.syntactic.sentence_length.shortest %}
                 <details><summary>shortest &amp; longest</summary>
                   <p><em>Shortest ({{ p.syntactic.sentence_length.shortest.length }}w):</em>
-                    “{{ p.syntactic.sentence_length.shortest.text }}”</p>
+                    "{{ p.syntactic.sentence_length.shortest.text }}"</p>
                   <p><em>Longest ({{ p.syntactic.sentence_length.longest.length }}w):</em>
-                    “{{ p.syntactic.sentence_length.longest.text }}”</p>
+                    "{{ p.syntactic.sentence_length.longest.text }}"</p>
                 </details>
               {% endif %}
             </li>
-            <li><strong>Sentence openers:</strong>
+            <li><strong>{{ gloss('Sentence opener', 'Sentence openers') }}:</strong>
               <ul class="sub">
                 {% for label, count, pct in p.syntactic.openers.ranked[:5] %}
                   {% if count > 0 %}
                   <li>{{ label }}: {{ count }} ({{ pct }}%)
                     {% if p.syntactic.openers.examples[label] %}
-                      <span class="muted">— e.g. “{{ p.syntactic.openers.examples[label][0] }}”</span>
+                      <span class="muted">— e.g. "{{ p.syntactic.openers.examples[label][0] }}"</span>
                     {% endif %}
                   </li>
                   {% endif %}
                 {% endfor %}
               </ul>
             </li>
-            <li><strong>Coordination/Subordination:</strong>
+            <li><strong>{{ gloss('Coordination') }}/{{ gloss('Subordination') }}:</strong>
               {{ p.syntactic.coord_subord.tendency }}
               (sub/coord ratio {{ p.syntactic.coord_subord.subordination_to_coordination }};
-              comma splices flagged: {{ p.syntactic.coord_subord.comma_splices }})
+              {{ gloss('Comma splice', 'comma splices') }} flagged: {{ p.syntactic.coord_subord.comma_splices }})
               {% if p.syntactic.coord_subord.subordinate_terms %}
-                <details><summary>favored subordinators</summary>
+                <details><summary>favored {{ gloss('Subordinator', 'subordinators') }}</summary>
                   <code>{{ p.syntactic.coord_subord.subordinate_terms|join(', ') }}</code>
                 </details>
               {% endif %}
             </li>
-            <li><strong>Punctuation per 500w:</strong>
+            <li><strong>Punctuation {{ gloss('Per 500 words', 'per 500w') }}:</strong>
               <ul class="sub">
                 {% for k, v in p.syntactic.punctuation.per_500.items() %}
                   {% if v > 0 %}
-                    <li>{{ k }}: {{ v }} (raw {{ p.syntactic.punctuation.raw[k] }})</li>
+                    <li>{% if k == 'em_dashes' %}{{ gloss('Em dash', 'em_dashes') }}{% else %}{{ k }}{% endif %}:
+                      {{ v }} (raw {{ p.syntactic.punctuation.raw[k] }})</li>
                   {% endif %}
                 {% endfor %}
               </ul>
@@ -188,39 +213,40 @@
               {{ p.discourse.paragraph_structure.paragraph_count }} paragraphs,
               mean {{ p.discourse.paragraph_structure.mean_sentences }} sentences
               ({{ p.discourse.paragraph_structure.min_sentences }}–{{ p.discourse.paragraph_structure.max_sentences }} range).
-              Dominant topic-sentence position: <em>{{ p.discourse.paragraph_structure.dominant_topic_position }}</em>
+              Dominant {{ gloss('Topic sentence', 'topic-sentence') }} position:
+              <em>{{ p.discourse.paragraph_structure.dominant_topic_position }}</em>
               <span class="muted">(heuristic — analyst review recommended)</span>
             </li>
-            <li><strong>Transition strategy:</strong>
+            <li><strong>{{ gloss('Transition strategy') }}:</strong>
               {{ p.discourse.transitions.dominant_strategy }}
               {% if p.discourse.transitions.examples %}
                 <details><summary>sample paragraph openings</summary>
                   {% for cat, exs in p.discourse.transitions.examples.items() %}
                     {% for ex in exs %}
-                      <p><code>{{ cat }}</code> — “{{ ex }}”</p>
+                      <p><code>{{ cat }}</code> — "{{ ex }}"</p>
                     {% endfor %}
                   {% endfor %}
                 </details>
               {% endif %}
             </li>
-            <li><strong>Evidence/Claim:</strong>
+            <li><strong>{{ gloss('Evidence type', 'Evidence/Claim') }}:</strong>
               dominant pattern: {{ p.discourse.evidence_claim.dominant_pattern }};
               primary evidence type: {{ p.discourse.evidence_claim.primary_evidence_type }}
               <details><summary>evidence types observed</summary>
                 <code>{{ p.discourse.evidence_claim.evidence_types }}</code>
               </details>
             </li>
-            <li><strong>Metadiscourse:</strong>
-              textual {{ p.discourse.metadiscourse.textual_per_500 }}/500w
+            <li><strong>{{ gloss('Metadiscourse') }}:</strong>
+              {{ gloss('Textual metadiscourse', 'textual') }} {{ p.discourse.metadiscourse.textual_per_500 }}/500w
               ({{ p.discourse.metadiscourse.textual_total }} raw),
-              interpersonal {{ p.discourse.metadiscourse.interpersonal_per_500 }}/500w
+              {{ gloss('Interpersonal metadiscourse', 'interpersonal') }} {{ p.discourse.metadiscourse.interpersonal_per_500 }}/500w
               ({{ p.discourse.metadiscourse.interpersonal_total }} raw)
             </li>
           </ul>
 
           <h3>Register</h3>
           <ul>
-            <li><strong>Classification:</strong>
+            <li><strong>{{ gloss('Register', 'Classification') }}:</strong>
               <em>{{ p.register.classification.classification }}</em>
               {% if p.register.classification.evidence %}
                 <details><summary>markers</summary>
@@ -230,7 +256,7 @@
                 </details>
               {% endif %}
             </li>
-            <li><strong>Consistency:</strong>
+            <li><strong>{{ gloss('Register consistency', 'Consistency') }}:</strong>
               {% if p.register.consistency.get('note') %}
                 {{ p.register.consistency.note }}
               {% elif p.register.consistency.consistent %}
@@ -244,7 +270,7 @@
                 </ul>
               {% endif %}
             </li>
-            <li><strong>Pronoun profile per 500w:</strong>
+            <li><strong>{{ gloss('Pronoun profile') }} per 500w:</strong>
               <ul class="sub">
                 {% for k, v in p.register.pronouns.per_500.items() %}
                   {% if v > 0 %}<li>{{ k }}: {{ v }} (raw {{ p.register.pronouns.counts[k] }})</li>{% endif %}
@@ -256,6 +282,169 @@
         </div>
         {% endfor %}
       </div>
+    </section>
+
+    {# --- AI-writing-signs section (profile-only, no comparator ratings) --- #}
+    <section class="ai-signs">
+      <h2>{{ gloss('AI-writing sign', 'AI-Writing Signs') }}</h2>
+      <p class="ai-disclaimer">
+        Eight stylistic markers commonly observed in large-language-model output,
+        from <a href="https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing"
+        target="_blank" rel="noopener">Wikipedia's "Signs of AI writing"</a>
+        catalog. High rates are descriptive only — humans use these patterns
+        too, and no single sign is determinative. See
+        <a href="https://github.com/justalewis/stylometric-compare/blob/main/docs/ai-signs.md"
+        target="_blank" rel="noopener">docs/ai-signs.md</a> for methodology
+        and the full Wikipedia crosswalk.
+      </p>
+
+      {% for prof_key, side in [('profile_a', 'Text A'), ('profile_b', 'Text B')] %}
+        {% set p = result[prof_key] %}
+        {% set ai = p.ai_signs %}
+        <h3 style="margin-top: 1.25rem;">{{ side }}</h3>
+        <p class="ai-headline">
+          Total markers: <strong>{{ ai.total_markers_raw }}</strong>
+          ({{ ai.total_markers_per_500 }}/500w)
+        </p>
+        <div class="ai-signs-grid">
+
+          <div class="ai-metric">
+            <h4>{{ gloss('AI vocabulary') }}
+              <span class="rate {% if ai.metrics.ai_vocabulary.raw_count == 0 %}zero{% endif %}">
+                {{ ai.metrics.ai_vocabulary.raw_count }} / {{ ai.metrics.ai_vocabulary.per_500 }}/500w
+              </span>
+              <a class="wiki-link" target="_blank" rel="noopener"
+                 href="{{ ai.metrics.ai_vocabulary.wikipedia_section }}">↗ wiki</a>
+            </h4>
+            {% if ai.metrics.ai_vocabulary.top_hits %}
+              <ul>
+                {% for w, c in ai.metrics.ai_vocabulary.top_hits[:6] %}
+                  <li><code>{{ w }}</code> ({{ c }}×){% if ai.metrics.ai_vocabulary.provenance.get(w) %}
+                      <span class="muted">— lists: {{ ai.metrics.ai_vocabulary.provenance[w]|join(', ') }}</span>
+                    {% endif %}</li>
+                {% endfor %}
+              </ul>
+            {% else %}<em class="muted">no hits</em>{% endif %}
+          </div>
+
+          <div class="ai-metric">
+            <h4>{{ gloss('Promotional phrasing') }}
+              <span class="rate {% if ai.metrics.promotional.raw_count == 0 %}zero{% endif %}">
+                {{ ai.metrics.promotional.raw_count }} / {{ ai.metrics.promotional.per_500 }}/500w
+              </span>
+              <a class="wiki-link" target="_blank" rel="noopener"
+                 href="{{ ai.metrics.promotional.wikipedia_section }}">↗ wiki</a>
+            </h4>
+            {% if ai.metrics.promotional.top_hits %}
+              <ul>{% for term, c in ai.metrics.promotional.top_hits[:5] %}
+                <li><code>{{ term }}</code> ({{ c }}×)</li>
+              {% endfor %}</ul>
+              {% for ex in ai.metrics.promotional.examples[:1] %}
+                <div class="ai-example">"{{ ex.sentence }}"</div>
+              {% endfor %}
+            {% else %}<em class="muted">no hits</em>{% endif %}
+          </div>
+
+          <div class="ai-metric">
+            <h4>{{ gloss('Significance emphasis') }}
+              <span class="rate {% if ai.metrics.significance.raw_count == 0 %}zero{% endif %}">
+                {{ ai.metrics.significance.raw_count }} / {{ ai.metrics.significance.per_500 }}/500w
+              </span>
+              <a class="wiki-link" target="_blank" rel="noopener"
+                 href="{{ ai.metrics.significance.wikipedia_section }}">↗ wiki</a>
+            </h4>
+            {% if ai.metrics.significance.top_hits %}
+              <ul>{% for term, c in ai.metrics.significance.top_hits[:5] %}
+                <li><code>{{ term }}</code> ({{ c }}×)</li>
+              {% endfor %}</ul>
+              {% for ex in ai.metrics.significance.examples[:1] %}
+                <div class="ai-example">"{{ ex.sentence }}"</div>
+              {% endfor %}
+            {% else %}<em class="muted">no hits</em>{% endif %}
+          </div>
+
+          <div class="ai-metric">
+            <h4>{{ gloss('Vague attribution') }}
+              <span class="rate {% if ai.metrics.vague_attribution.raw_count == 0 %}zero{% endif %}">
+                {{ ai.metrics.vague_attribution.raw_count }} / {{ ai.metrics.vague_attribution.per_500 }}/500w
+              </span>
+              <a class="wiki-link" target="_blank" rel="noopener"
+                 href="{{ ai.metrics.vague_attribution.wikipedia_section }}">↗ wiki</a>
+            </h4>
+            {% if ai.metrics.vague_attribution.top_hits %}
+              <ul>{% for term, c in ai.metrics.vague_attribution.top_hits[:5] %}
+                <li><code>{{ term }}</code> ({{ c }}×)</li>
+              {% endfor %}</ul>
+            {% else %}<em class="muted">no hits</em>{% endif %}
+          </div>
+
+          <div class="ai-metric">
+            <h4>{{ gloss('Negative parallelism', 'Negative parallelisms') }}
+              <span class="rate {% if ai.metrics.negative_parallelisms.raw_count == 0 %}zero{% endif %}">
+                {{ ai.metrics.negative_parallelisms.raw_count }} / {{ ai.metrics.negative_parallelisms.per_500 }}/500w
+              </span>
+              <a class="wiki-link" target="_blank" rel="noopener"
+                 href="{{ ai.metrics.negative_parallelisms.wikipedia_section }}">↗ wiki</a>
+            </h4>
+            {% if ai.metrics.negative_parallelisms.examples %}
+              {% for ex in ai.metrics.negative_parallelisms.examples[:2] %}
+                <div class="ai-example">"{{ ex.sentence }}"</div>
+              {% endfor %}
+            {% else %}<em class="muted">no hits</em>{% endif %}
+          </div>
+
+          <div class="ai-metric">
+            <h4>{{ gloss('Participial tail', 'Participial pseudo-analysis') }}
+              <span class="rate {% if ai.metrics.participial_tails.raw_count == 0 %}zero{% endif %}">
+                {{ ai.metrics.participial_tails.raw_count }} / {{ ai.metrics.participial_tails.per_500 }}/500w
+              </span>
+              <a class="wiki-link" target="_blank" rel="noopener"
+                 href="{{ ai.metrics.participial_tails.wikipedia_section }}">↗ wiki</a>
+            </h4>
+            {% if ai.metrics.participial_tails.top_starters %}
+              <ul>{% for w, c in ai.metrics.participial_tails.top_starters[:5] %}
+                <li><code>{{ w }}</code> ({{ c }}×)</li>
+              {% endfor %}</ul>
+              {% for ex in ai.metrics.participial_tails.examples[:1] %}
+                <div class="ai-example">"{{ ex.sentence }}"</div>
+              {% endfor %}
+            {% else %}<em class="muted">no hits</em>{% endif %}
+          </div>
+
+          <div class="ai-metric">
+            <h4>{{ gloss('Rule of three') }}
+              <span class="rate {% if ai.metrics.rule_of_three.raw_count == 0 %}zero{% endif %}">
+                {{ ai.metrics.rule_of_three.raw_count }} / {{ ai.metrics.rule_of_three.per_500 }}/500w
+              </span>
+              <a class="wiki-link" target="_blank" rel="noopener"
+                 href="{{ ai.metrics.rule_of_three.wikipedia_section }}">↗ wiki</a>
+            </h4>
+            {% if ai.metrics.rule_of_three.examples %}
+              {% for ex in ai.metrics.rule_of_three.examples[:3] %}
+                <div class="ai-example">
+                  <code>{{ ex['items']|join(' / ') }}</code>
+                </div>
+              {% endfor %}
+            {% else %}<em class="muted">no hits</em>{% endif %}
+          </div>
+
+          <div class="ai-metric">
+            <h4>{{ gloss('Conclusion formula', 'Conclusion formulas') }}
+              <span class="rate {% if ai.metrics.conclusion_formulas.raw_count == 0 %}zero{% endif %}">
+                {{ ai.metrics.conclusion_formulas.raw_count }} / {{ ai.metrics.conclusion_formulas.per_500 }}/500w
+              </span>
+              <a class="wiki-link" target="_blank" rel="noopener"
+                 href="{{ ai.metrics.conclusion_formulas.wikipedia_section }}">↗ wiki</a>
+            </h4>
+            {% if ai.metrics.conclusion_formulas.top_hits %}
+              <ul>{% for term, c in ai.metrics.conclusion_formulas.top_hits[:5] %}
+                <li><code>{{ term }}</code> ({{ c }}×)</li>
+              {% endfor %}</ul>
+            {% else %}<em class="muted">no hits</em>{% endif %}
+          </div>
+
+        </div>
+      {% endfor %}
     </section>
 
     <footer>

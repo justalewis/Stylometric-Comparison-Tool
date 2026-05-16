@@ -223,3 +223,124 @@ INTERPRETATION_MARKERS = [
     "in other words", "what this means", "the point is", "the upshot",
     "the takeaway", "the implication",
 ]
+
+
+# ---------------------------------------------------------------------------
+# AI-writing-signs lists. Sourced from
+# https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing
+# (accessed 2026-05-16). These feed analyzer/aitext_signs.py.
+# ---------------------------------------------------------------------------
+
+# §"High density of AI vocabulary words" — three time-stratified lists
+# documented on the Wikipedia page. We keep them separate so the report can
+# show provenance ("this hit appears on the mid-2025+ list").
+
+AI_VOCAB_2023_MID2024 = {
+    "additionally", "boasts", "bolstered", "crucial", "delve",
+    "emphasizing", "enduring", "garner", "intricate", "intricacies",
+    "interplay", "key", "landscape", "meticulous", "meticulously",
+    "pivotal", "underscore", "underscores", "underscored", "underscoring",
+    "tapestry", "testament", "valuable", "vibrant",
+}
+
+AI_VOCAB_MID2024_MID2025 = {
+    "bolstered", "crucial", "emphasizing", "enhance", "enhances",
+    "enhanced", "enhancing", "enduring", "fostering", "highlighting",
+    "highlights", "highlight", "pivotal", "showcasing", "showcase",
+    "showcases", "underscore", "underscores", "underscored", "vibrant",
+}
+
+AI_VOCAB_MID2025_PLUS = {
+    "emphasizing", "enhance", "enhances", "enhanced", "enhancing",
+    "highlighting", "highlights", "highlight", "showcasing", "showcase",
+    "showcases",
+}
+
+# "Align with" is a multi-word entry on the mid-2024 list; we match it
+# separately as a phrase.
+AI_VOCAB_PHRASES = ["align with", "aligns with", "aligned with", "aligning with"]
+
+
+# §"Promotional and advertisement-like language"
+AI_PROMOTIONAL_PHRASES = [
+    "boasts a", "boasts an", "in the heart of", "nestled in",
+    "nestled between", "natural beauty", "diverse array", "wide array",
+    "rich tapestry", "rich array", "rich history", "rich tradition",
+    "commitment to excellence", "deep commitment", "unwavering commitment",
+    "renowned for", "groundbreaking", "state-of-the-art",
+    "world-class", "cutting-edge", "deeply committed",
+]
+
+AI_PROMOTIONAL_SINGLES = {
+    "vibrant", "renowned", "profound", "exemplifies", "showcases",
+}
+
+
+# §"Undue emphasis on significance, legacy, and broader trends"
+AI_SIGNIFICANCE_PHRASES = [
+    "stands as", "serves as", "stands as a testament", "is a testament",
+    "testament to", "pivotal role", "crucial role", "key role",
+    "vital role", "significant role", "central role", "important role",
+    "underscores its importance", "underscores the importance",
+    "highlights its importance", "highlights the importance",
+    "highlights its significance", "underscores its significance",
+    "reflects broader", "reflects a broader", "focal point",
+    "indelible mark", "indelible impact", "deeply rooted",
+    "key turning point", "evolving landscape", "shifting landscape",
+    "setting the stage for", "marking a shift", "represents a shift",
+    "shaping the future", "shaping the landscape", "ongoing legacy",
+    "enduring legacy", "lasting impact", "contributing to the",
+    "in the broader context", "in the larger context",
+]
+
+
+# §"Vague attributions and overgeneralization of opinions"
+AI_VAGUE_ATTRIBUTION_PHRASES = [
+    "industry reports", "industry experts", "observers have cited",
+    "observers have noted", "experts argue", "experts say",
+    "experts believe", "experts have noted", "experts contend",
+    "critics argue", "critics have noted", "some critics argue",
+    "some scholars argue", "several sources", "several publications",
+    "several outlets", "many sources", "various sources",
+    "various publications", "various outlets", "multiple sources",
+    "leading experts", "leading scholars", "scholars have argued",
+    "scholars argue", "scholars suggest", "researchers have shown",
+    "studies have shown", "studies suggest", "studies indicate",
+    "research suggests", "research shows", "research indicates",
+]
+
+
+# §"Outline-like conclusions about challenges and future prospects"
+AI_CONCLUSION_PHRASES = [
+    "despite its", "despite these challenges", "despite the challenges",
+    "challenges and legacy", "future outlook", "looking ahead",
+    "moving forward", "as we look to the future", "in conclusion",
+    "to conclude", "in summary", "to summarize", "in the years to come",
+    "in the coming years", "in the future", "the future holds",
+    "going forward", "as we move forward", "navigating these challenges",
+    "faces several challenges", "faces many challenges",
+    "faces numerous challenges", "remain to be seen",
+]
+
+
+# §"Avoidance of basic copulatives" — verbs that LLMs reach for instead of
+# "is/are". We don't penalize these — we just count them and report them
+# alongside the is/are rate so the analyst can see the substitution pattern.
+AI_COPULA_SUBSTITUTES = {
+    "serves", "stands", "marks", "represents", "embodies",
+    "exemplifies", "constitutes", "epitomizes", "encompasses",
+    "personifies", "signifies", "denotes",
+}
+
+
+# §"Superficial analyses" — sentences ending in a participial -ing clause
+# making unattributed claims. We detect these heuristically; this list
+# captures the common starters.
+AI_PARTICIPIAL_STARTERS = {
+    "highlighting", "underscoring", "emphasizing", "ensuring",
+    "reflecting", "symbolizing", "contributing", "cultivating",
+    "fostering", "encompassing", "showcasing", "demonstrating",
+    "illustrating", "providing", "offering", "enabling",
+    "facilitating", "promoting", "shaping", "marking", "creating",
+    "establishing", "delivering", "yielding",
+}
