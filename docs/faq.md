@@ -160,18 +160,18 @@ Gunicorn does log request paths and statuses (visible in `fly
 logs`), but request bodies are not logged.
 
 That said, **the tool's threat model assumes you're submitting your
-own work or work you have permission to analyze.** If you wouldn't
-paste the text into a search engine, don't paste it into this tool.
+own work or work you have permission to analyze.** Since the tool
+is publicly accessible, the same caution applies as for any web
+service: if you wouldn't paste the text into a search engine, don't
+paste it into this tool.
 
-### Can I run this without the auth gate?
+### Does the tool require a password?
 
-Not in production. The auth gate is fail-closed by design — if
-`STYLOMETRIC_PASSWORD` isn't set, the app returns 503. For local
-development you can set the variable to anything; for production
-behind a different auth system (institutional SSO, a reverse proxy
-that handles auth, etc.) you could in principle disable the gate,
-but that requires editing `app.py` and is not a supported
-configuration.
+No. As of the current deployment, the tool is public — anyone with
+the URL can use it. Earlier versions used HTTP Basic Auth with a
+shared password; that gate was removed when the tool went fully
+public. To re-enable auth, restore the `@app.before_request` handler
+that was removed from `app.py` in commit history.
 
 ### Where are the texts stored after I submit them?
 

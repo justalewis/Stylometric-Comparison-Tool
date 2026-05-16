@@ -52,13 +52,7 @@ cd C:\Users\Justin\Desktop\Stylometric-Compare
 # 1. Create the app shell (one-time).
 fly apps create stylometric-compare
 
-# 2. Stage the auth secret. --stage means "save it but don't deploy yet."
-fly secrets set STYLOMETRIC_PASSWORD="<a-strong-password>" --app stylometric-compare --stage
-
-# 3. (Optional) Override the default username "user".
-fly secrets set STYLOMETRIC_USERNAME="justin" --app stylometric-compare --stage
-
-# 4. Build the image, push to Fly's registry, launch the machine.
+# 2. Build the image, push to Fly's registry, launch the machine.
 #    --ha=false provisions a single machine instead of the default HA pair.
 fly deploy --app stylometric-compare --ha=false
 ```
@@ -68,6 +62,7 @@ After a successful deploy:
 - The app is reachable at `https://<app-name>.fly.dev/`.
 - HTTPS is enforced (HTTP redirects to HTTPS).
 - A single shared-cpu-1x machine with 512 MB RAM is running in `sjc`.
+- The tool is **publicly accessible** — no authentication.
 
 ### Region
 
@@ -161,8 +156,7 @@ def healthz():
     return Response("ok", mimetype="text/plain")
 ```
 
-`/healthz` is **excluded from the auth gate** so Fly's checks don't
-need credentials. Verify after each deploy:
+Verify after each deploy:
 
 ```powershell
 curl -s -o NUL -w "%{http_code}`n" https://stylometric-compare.fly.dev/healthz
@@ -173,28 +167,18 @@ curl -s -o NUL -w "%{http_code}`n" https://stylometric-compare.fly.dev/healthz
 
 ## Secrets
 
-The app refuses to serve unless `STYLOMETRIC_PASSWORD` is set. This is
-deliberate: silent fallback to "no auth" would be a serious foot-gun
-on a public URL.
+The current deployment uses no secrets — the tool is public.
+General `fly secrets` commands if you need them later:
 
 ```powershell
-# List secrets (names only; values are not retrievable).
-fly secrets list --app stylometric-compare
-
-# Update a secret. By default this triggers a redeploy.
-fly secrets set STYLOMETRIC_PASSWORD="<new-password>" --app stylometric-compare
-
-# Stage a secret without redeploying.
-fly secrets set STYLOMETRIC_PASSWORD="<new-password>" --app stylometric-compare --stage
-
-# Apply staged secrets to running machines without rebuilding.
-fly secrets deploy --app stylometric-compare
-
-# Remove a secret.
-fly secrets unset STYLOMETRIC_USERNAME --app stylometric-compare
+fly secrets list --app stylometric-compare              # list (names only)
+fly secrets set NAME="value" --app stylometric-compare  # set + redeploy
+fly secrets unset NAME --app stylometric-compare        # remove
 ```
 
-Username defaults to `user` when `STYLOMETRIC_USERNAME` is unset.
+If you want to re-introduce authentication, restore the
+`@app.before_request` handler from prior commits and set a
+`STYLOMETRIC_PASSWORD` secret.
 
 ---
 
@@ -290,13 +274,9 @@ alternate region. Edit `primary_region` in `fly.toml` and redeploy.
 
 ### "Server is missing STYLOMETRIC_PASSWORD; refusing to serve."
 
-The secret hasn't been set or the deploy ran before the secret was
-applied. Run:
-
-```powershell
-fly secrets list --app stylometric-compare
-fly secrets set STYLOMETRIC_PASSWORD="..." --app stylometric-compare
-```
+You're running an older version of `app.py` that still expects the
+auth secret. Pull the latest `main` (the auth gate was removed in
+the public-access commit) and redeploy.
 
 ### Cold-start latency
 
@@ -337,8 +317,8 @@ Verify the production container locally before pushing to Fly:
 
 ```powershell
 docker build -t stylometric-compare .
-docker run --rm -p 8080:8080 -e STYLOMETRIC_PASSWORD=local stylometric-compare
+docker run --rm -p 8080:8080 stylometric-compare
 ```
 
 Then `curl http://127.0.0.1:8080/healthz` should return `ok`, and
-`curl -u user:local http://127.0.0.1:8080/` should return the form.
+`curl http://127.0.0.1:8080/` should return the form HTML.

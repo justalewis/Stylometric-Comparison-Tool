@@ -1,15 +1,14 @@
 """Stylometric Comparison Tool — Flask app.
 
 Routes:
-  GET  /          → input form (auth required)
+  GET  /          → input form
+  GET  /glossary  → in-app glossary with examples
   POST /compare   → run analysis; render HTML report (or Markdown attachment)
-  GET  /healthz   → unauthenticated health check
+  GET  /healthz   → health check
 """
 
 from __future__ import annotations
 
-import hmac
-import os
 from datetime import datetime
 
 from flask import Flask, Response, render_template, request
@@ -27,39 +26,6 @@ app.config["MAX_CONTENT_LENGTH"] = 2 * 1024 * 1024  # 2 MB max submission
 @app.context_processor
 def _inject_glossary():
     return {"glossary": GLOSSARY}
-
-_BASIC_AUTH_USER = os.environ.get("STYLOMETRIC_USERNAME", "user")
-_BASIC_AUTH_PASS = os.environ.get("STYLOMETRIC_PASSWORD", "")
-_AUTH_REALM = "Stylometric Comparison"
-
-
-def _credentials_ok(auth) -> bool:
-    if auth is None or auth.type != "basic":
-        return False
-    user_ok = hmac.compare_digest(auth.username or "", _BASIC_AUTH_USER)
-    pass_ok = hmac.compare_digest(auth.password or "", _BASIC_AUTH_PASS)
-    return user_ok and pass_ok
-
-
-@app.before_request
-def _require_auth():
-    if request.path == "/healthz" or request.path.startswith("/static/"):
-        return None
-    if not _BASIC_AUTH_PASS:
-        # Fail closed if the deployment forgot to set a password.
-        return Response(
-            "Server is missing STYLOMETRIC_PASSWORD; refusing to serve.",
-            status=503,
-            mimetype="text/plain",
-        )
-    if not _credentials_ok(request.authorization):
-        return Response(
-            "Authentication required.",
-            status=401,
-            headers={"WWW-Authenticate": f'Basic realm="{_AUTH_REALM}"'},
-            mimetype="text/plain",
-        )
-    return None
 
 
 @app.route("/healthz", methods=["GET"])

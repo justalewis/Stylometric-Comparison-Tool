@@ -47,7 +47,6 @@ framework without touching it.
                               ▼
 ┌──────────────────────────────────────────────────────────────────────┐
 │  app.py                                                               │
-│    @app.before_request → HTTP Basic Auth gate                         │
 │    _resolve_text(form_key, file_key) for each text:                   │
 │        if upload present → extract.extract_text(filename, bytes)      │
 │        else              → request.form[form_key]                     │
@@ -201,14 +200,14 @@ Maps file extensions to plain-text extractors. Each extractor takes
 
 ### `app.py`
 
-The Flask app, with the auth gate as a `@app.before_request` handler.
-Three routes:
+The Flask app. Routes:
 
 | Route | Methods | Behavior |
 |---|---|---|
-| `/healthz` | GET | Returns `200 OK` with body `ok`. Unauthenticated. Used by Fly's health checks. |
-| `/` | GET | Renders the input form. Auth required. |
-| `/compare` | POST | Runs analysis, returns HTML report or Markdown attachment based on form's `format` field. Auth required. |
+| `/healthz` | GET | Returns `200 OK` with body `ok`. Used by Fly's health checks. |
+| `/` | GET | Renders the input form. |
+| `/glossary` | GET | Renders the in-app glossary with examples and comparisons. |
+| `/compare` | POST | Runs analysis, returns HTML report or Markdown attachment based on form's `format` field. |
 
 `_resolve_text(form_key, file_key, label, errors)` is the helper that
 prefers an uploaded file over the textarea on the same panel. Both

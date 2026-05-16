@@ -6,7 +6,7 @@ syntax, discourse organization, and register. Designed for instructors,
 editors, and researchers who want a transparent description of *what each
 text does linguistically* rather than a black-box authorship verdict.
 
-**Live (private):** <https://stylometric-compare.fly.dev/>
+**Live:** <https://stylometric-compare.fly.dev/>
 
 This tool is **not** a plagiarism detector and **not** an AI-generated-text
 classifier. It describes lexical and structural patterns and reports the
@@ -112,16 +112,11 @@ python -m spacy download en_core_web_sm
 ### Run the dev server
 
 ```powershell
-$env:STYLOMETRIC_PASSWORD = "pick-anything-for-local-dev"
 python app.py
 ```
 
-Visit <http://127.0.0.1:5050> and authenticate with username `user` and
-the password you just set. To change the username, also set
-`STYLOMETRIC_USERNAME`.
-
-Without `STYLOMETRIC_PASSWORD` set, the app fails closed with a 503 — the
-auth gate is a safety property, not opt-in.
+Visit <http://127.0.0.1:5050>. The tool runs publicly — no
+authentication.
 
 ### Run analyses programmatically
 
@@ -157,7 +152,6 @@ Short version:
 
 ```powershell
 fly apps create stylometric-compare
-fly secrets set STYLOMETRIC_PASSWORD="<strong-password>" --app stylometric-compare
 fly deploy --app stylometric-compare --ha=false
 ```
 

@@ -8,7 +8,21 @@ features, patch versions are bug fixes.
 
 ## [Unreleased]
 
+### Removed
+- HTTP Basic Auth gate. The tool is now publicly accessible — no
+  `STYLOMETRIC_PASSWORD` required. The `@app.before_request` handler,
+  `_credentials_ok` helper, and the two `STYLOMETRIC_USERNAME` /
+  `STYLOMETRIC_PASSWORD` environment-variable reads are deleted.
+  README, FAQ, deployment.md, and architecture.md updated to reflect
+  public access. To re-introduce authentication later, restore the
+  removed handler from git history.
+
 ### Added
+- `templates/glossary.html` and `/glossary` route — an in-app reference
+  page reachable from the form and the report. Walks through every
+  metric the tool produces (4 lexical, 4 syntactic, 4 discourse, 3
+  register, 4 comparison ratings, 8 AI-writing signs) with plain-
+  language definitions and side-by-side example blocks.
 - `CONTRIBUTING.md` — development setup, contribution recipe, style
   conventions.
 - `docs/pedagogy.md` — instructor's guide for using the tool in
