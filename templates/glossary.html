@@ -1,0 +1,892 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Glossary — Stylometric Comparison</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="container glossary-page">
+    <header>
+      <nav class="topnav">
+        <a href="{{ url_for('index') }}">← Back to the tool</a>
+      </nav>
+      <h1>Glossary</h1>
+      <p class="lede">
+        Every metric the tool produces, with a plain-language definition,
+        an example or two, and side-by-side comparisons showing what
+        high and low values actually look like in prose. The eight
+        AI-writing signs are at the bottom, each with a side-by-side
+        showing AI-style phrasing versus the same idea written without
+        the marker.
+      </p>
+    </header>
+
+    {# -- Table of contents -- #}
+    <nav class="gloss-toc">
+      <ol>
+        <li><a href="#preprocessing">Preprocessing</a></li>
+        <li><a href="#section-1">§1 Lexical</a>
+          <ol>
+            <li><a href="#ttr">1.1 Type-Token Ratio</a></li>
+            <li><a href="#latinate-germanic">1.2 Latinate / Germanic</a></li>
+            <li><a href="#pet-words">1.3 Pet Words & Habitual Phrases</a></li>
+            <li><a href="#hedges">1.4 Hedges, Fillers, Intensifiers</a></li>
+          </ol>
+        </li>
+        <li><a href="#section-2">§2 Syntactic</a>
+          <ol>
+            <li><a href="#sentence-length">2.1 Sentence Length</a></li>
+            <li><a href="#openers">2.2 Sentence Openers</a></li>
+            <li><a href="#coord-subord">2.3 Coordination / Subordination</a></li>
+            <li><a href="#punctuation">2.4 Punctuation</a></li>
+          </ol>
+        </li>
+        <li><a href="#section-3">§3 Discourse</a>
+          <ol>
+            <li><a href="#paragraphs">3.1 Paragraph Structure</a></li>
+            <li><a href="#transitions">3.2 Transition Strategy</a></li>
+            <li><a href="#evidence-claim">3.3 Evidence / Claim</a></li>
+            <li><a href="#metadiscourse">3.4 Metadiscourse</a></li>
+          </ol>
+        </li>
+        <li><a href="#section-4">§4 Register</a>
+          <ol>
+            <li><a href="#register">4.1 Register Classification</a></li>
+            <li><a href="#consistency">4.2 Register Consistency</a></li>
+            <li><a href="#pronouns">4.3 Pronoun Profile</a></li>
+          </ol>
+        </li>
+        <li><a href="#ratings">§5 Comparison Ratings</a></li>
+        <li><a href="#ai-signs">§6 AI-Writing Signs</a>
+          <ol>
+            <li><a href="#ai-vocabulary">AI Vocabulary</a></li>
+            <li><a href="#promotional">Promotional Phrasing</a></li>
+            <li><a href="#significance">Significance Emphasis</a></li>
+            <li><a href="#vague-attribution">Vague Attribution</a></li>
+            <li><a href="#negative-parallelism">Negative Parallelisms</a></li>
+            <li><a href="#participial-tails">Participial Pseudo-Analysis</a></li>
+            <li><a href="#rule-of-three">Rule of Three</a></li>
+            <li><a href="#conclusion-formulas">Conclusion Formulas</a></li>
+          </ol>
+        </li>
+      </ol>
+    </nav>
+
+    {# -- Preprocessing -- #}
+    <section id="preprocessing">
+      <h2>Preprocessing</h2>
+
+      <article class="entry">
+        <h3>Quoted material</h3>
+        <p>Direct quotations from sources. The tool removes them before
+        analysis because they're the source author's choices, not the
+        writer's. Double-quoted spans (straight and curly) and block
+        quotes (indented or <code>&gt;</code>-prefixed lines) are stripped.</p>
+        <div class="example">
+          <p class="ex-label">Before stripping:</p>
+          <p>As Smith argues, "the rhetorical situation is always
+          contingent on audience uptake," and this insight reshapes how
+          we read student work.</p>
+          <p class="ex-label">After stripping (what the analyzer sees):</p>
+          <p>As Smith argues, and this insight reshapes how we read student work.</p>
+        </div>
+        <p class="muted">The report still notes how many quoted spans
+        were removed and how many words they contained.</p>
+      </article>
+
+      <article class="entry">
+        <h3>Sample size</h3>
+        <p>How many words remain after quoted material is removed. Below
+        250 words the tool warns that results may be unreliable. The
+        sweet spot is 400–1000 words.</p>
+        <p class="muted">Short samples make type-token ratio mechanically
+        high (every word is unique) and per-500-word rates noisy. Long
+        samples make TTR drop because common words start repeating.</p>
+      </article>
+    </section>
+
+    {# -- Section 1: Lexical -- #}
+    <section id="section-1">
+      <h2>§1 Lexical preferences</h2>
+
+      <article class="entry" id="ttr">
+        <h3>1.1 Type-Token Ratio (TTR)</h3>
+        <p>The number of distinct word forms (types) divided by the
+        total number of word forms (tokens). Higher TTR = more varied
+        vocabulary; lower TTR = more repetition.</p>
+        <div class="compare-grid">
+          <div class="compare-card">
+            <h4>High TTR (≈0.82)</h4>
+            <p class="ex">The cartographer surveyed shifting dunes,
+            inscribing their contours onto vellum. Each undulation
+            yielded a fresh hieroglyph; no ridgeline rehearsed an
+            earlier one.</p>
+            <p class="muted">26 tokens / 21 types. Almost no repetition.</p>
+          </div>
+          <div class="compare-card">
+            <h4>Low TTR (≈0.42)</h4>
+            <p class="ex">The thing about the thing is that the thing
+            keeps doing the thing, and so the thing we should do is
+            think about the thing the thing is doing to us.</p>
+            <p class="muted">31 tokens / 13 types. Heavy repetition.</p>
+          </div>
+        </div>
+        <p class="muted">Comparison rule: diff ≤ 0.05 = Strong; 0.05–0.10 =
+        Partial; &gt; 0.10 = No Match. If one text is more than 2× the
+        other's length, the rating is Indeterminate (length-effect).</p>
+      </article>
+
+      <article class="entry" id="latinate-germanic">
+        <h3>1.2 Latinate / Germanic lean</h3>
+        <p>English draws on two etymological streams. <span class="gloss" tabindex="0"
+        data-tooltip="Words derived from Latin or French roots. Tend to be formal, abstract, polysyllabic.">Latinate</span>
+        vocabulary (Latin/French roots) tends to be formal, abstract,
+        polysyllabic. <span class="gloss" tabindex="0"
+        data-tooltip="Words derived from Old English or Old Norse. Tend to be concrete, shorter, everyday.">Germanic</span>
+        vocabulary (Old English/Norse roots) tends to be concrete,
+        shorter, everyday. The same idea can be expressed in either
+        stream, and a writer's habitual preference is a stable
+        stylistic marker.</p>
+        <div class="compare-grid">
+          <div class="compare-card">
+            <h4>Latinate version</h4>
+            <p class="ex">We endeavored to ascertain whether the
+            methodology would facilitate substantive engagement with
+            the material. Ultimately, the implementation necessitates
+            careful articulation of underlying assumptions.</p>
+          </div>
+          <div class="compare-card">
+            <h4>Germanic version</h4>
+            <p class="ex">We tried to find out whether the way we
+            taught it would help students get into the stuff. In the
+            end, doing this means we have to spell out what we already
+            think is true.</p>
+          </div>
+        </div>
+        <p class="muted">Ratio = Latinate hits / (Latinate + Germanic).
+        ≥ 0.60 leans Latinate; ≤ 0.40 leans Germanic; in between is
+        mixed. Both pure Latinate / pure Germanic texts share a lean →
+        Strong Match. Opposite leans → No Match.</p>
+      </article>
+
+      <article class="entry" id="pet-words">
+        <h3>1.3 Pet Words & Habitual Phrases</h3>
+        <p>Content words a writer reaches for repeatedly that aren't
+        forced by the topic. With a topic hint, the tool separates
+        these from words that are topical (required by subject matter).</p>
+        <div class="example">
+          <p class="ex-label">Habitual word (filler):</p>
+          <p>I <em>basically</em> think there's <em>basically</em>
+          two ways to handle this. The first one, <em>basically</em>,
+          is to just talk to the student. The second is <em>basically</em>
+          to wait and see.</p>
+          <p class="muted">"basically" appears 4× as a filler — not
+          topic-required. The tool would flag it as habitual.</p>
+        </div>
+        <div class="example">
+          <p class="ex-label">Habitual phrase (multi-word):</p>
+          <p>At the end of the day, what matters is how the writing
+          sounds. And at the end of the day, that's not something you
+          can fake.</p>
+          <p class="muted">"at the end of the day" appears 2× — flagged
+          as a habitual phrase even though the individual content words
+          don't recur.</p>
+        </div>
+        <p class="muted">Comparison: 2+ shared habitual markers → Strong;
+        1 shared → Partial; none shared → No. Both texts empty →
+        Indeterminate.</p>
+      </article>
+
+      <article class="entry" id="hedges">
+        <h3>1.4 Hedges, Fillers, Intensifiers</h3>
+        <p>Three register-marking categories.</p>
+        <div class="compare-grid three">
+          <div class="compare-card">
+            <h4>Informal hedges</h4>
+            <p class="ex">It's <em>kind of</em> a problem. <em>Basically</em>,
+            students are <em>just</em> trying to figure it out. I mean,
+            <em>honestly</em>, who isn't?</p>
+            <p class="muted">basically, kind of, sort of, just, really, actually, honestly, like, I mean, you know</p>
+          </div>
+          <div class="compare-card">
+            <h4>Intensifiers</h4>
+            <p class="ex">The shift was <em>absolutely</em> dramatic —
+            <em>completely</em> reshaping how we teach. The results
+            were <em>literally</em> transformative.</p>
+            <p class="muted">very, extremely, absolutely, totally, completely, literally, definitely, clearly, obviously</p>
+          </div>
+          <div class="compare-card">
+            <h4>Formal hedges</h4>
+            <p class="ex"><em>Perhaps</em> the most useful framing is
+            that the situation is <em>arguably</em> still in flux. It
+            <em>could be argued</em> that consensus has not yet
+            emerged.</p>
+            <p class="muted">perhaps, arguably, potentially, somewhat, it could be argued, one might suggest, it appears that</p>
+          </div>
+        </div>
+        <p class="muted">Both texts share dominant pattern (both informal,
+        both formal, both low) → Strong. One informal-dominant + other
+        formal-dominant → No Match.</p>
+      </article>
+    </section>
+
+    {# -- Section 2: Syntactic -- #}
+    <section id="section-2">
+      <h2>§2 Syntactic patterns</h2>
+
+      <article class="entry" id="sentence-length">
+        <h3>2.1 Sentence Length Distribution</h3>
+        <p>Word counts per sentence. Mean tells you average length;
+        standard deviation tells you whether the writer alternates
+        short and long sentences or stays in a narrow band. SD is
+        often more diagnostic than mean.</p>
+        <div class="compare-grid">
+          <div class="compare-card">
+            <h4>Low SD — uniform rhythm</h4>
+            <p class="ex">The room was quiet. The students worked
+            steadily. No one spoke aloud. The clock ticked through
+            the period. Pages turned softly under hands.</p>
+            <p class="muted">5 sentences, mean ≈ 5.8, SD ≈ 1.3.</p>
+          </div>
+          <div class="compare-card">
+            <h4>High SD — varied rhythm</h4>
+            <p class="ex">The room was quiet. Students worked
+            steadily, heads bent over their notebooks in the
+            half-light of an October morning that had not quite
+            decided whether to commit to autumn or hold one more
+            week of summer. Pages turned. The clock ticked.</p>
+            <p class="muted">4 sentences, mean ≈ 11.5, SD ≈ 13.5.</p>
+          </div>
+        </div>
+        <p class="muted">Means within 3 words AND SDs within 3 → Strong;
+        one of those → Partial; neither → No Match.</p>
+      </article>
+
+      <article class="entry" id="openers">
+        <h3>2.2 Sentence Openers</h3>
+        <p>The first grammatical element of each sentence, in one of
+        six categories. Writers tend to have a default opening pattern.</p>
+        <div class="example">
+          <p class="ex-label">Six categories with examples:</p>
+          <ul class="cat-list">
+            <li><strong>Pronoun subject:</strong> <em>"I think the
+              policy is unclear."</em> / <em>"This means we have to
+              revise."</em></li>
+            <li><strong>Noun subject:</strong> <em>"Universities are
+              built around assumptions about authorship."</em></li>
+            <li><strong>Transitional connector:</strong> <em>"However,
+              the situation has shifted."</em> / <em>"On the other
+              hand, the evidence is mixed."</em></li>
+            <li><strong>Adverbial / prepositional:</strong> <em>"In
+              this essay, I argue..."</em> / <em>"As a result, faculty
+              must adapt."</em></li>
+            <li><strong>Participial / gerund:</strong> <em>"Struggling
+              to articulate the point, she paused."</em> / <em>"Given
+              this situation, we have options."</em></li>
+            <li><strong>Coordinating conjunction:</strong> <em>"But the
+              real issue is different."</em> / <em>"And that means we
+              need a new approach."</em></li>
+          </ul>
+        </div>
+        <p class="muted">Same top two categories within 15 percentage
+        points of each other → Strong; top matches but proportions
+        diverge → Partial; top differs → No Match.</p>
+      </article>
+
+      <article class="entry" id="coord-subord">
+        <h3>2.3 Coordination vs. Subordination</h3>
+        <p>Coordinating structures (<code>and</code>, <code>but</code>,
+        <code>or</code>, <code>so</code>) join clauses additively —
+        one thing, then another. Subordinating structures
+        (<code>because</code>, <code>although</code>, <code>while</code>,
+        <code>that</code>, <code>which</code>) embed one clause inside
+        another, producing complex, syntactically dense prose.</p>
+        <div class="compare-grid">
+          <div class="compare-card">
+            <h4>Coordination-heavy</h4>
+            <p class="ex">The policy was unclear, and students were
+            confused, and faculty were stuck, and nobody wanted to be
+            the first to say anything. So we waited. And the longer we
+            waited, the worse it got.</p>
+            <p class="muted">Strings of <em>and</em> / <em>so</em>
+            joining independent clauses. Paratactic, additive rhythm.</p>
+          </div>
+          <div class="compare-card">
+            <h4>Subordination-heavy</h4>
+            <p class="ex">Because the policy remained ambiguous when
+            students first encountered the new tools, which they had
+            already begun integrating into their drafts before any
+            formal guidance arrived, faculty who attempted to enforce
+            consistent standards found themselves negotiating a
+            terrain that the institution had not yet mapped.</p>
+            <p class="muted">Single sentence with multiple embedded
+            clauses (<em>because</em>, <em>which</em>, <em>that</em>,
+            <em>who</em>). Hypotactic, hierarchical.</p>
+          </div>
+        </div>
+        <p class="muted">Subordination/coordination ratio: ≥ 1.5 = high
+        subordination; 0.75–1.5 = balanced; &lt; 0.75 = high coordination.</p>
+      </article>
+
+      <article class="entry" id="punctuation">
+        <h3>2.4 Punctuation Rates</h3>
+        <p>Frequency per 500 words of semicolons, colons, em dashes,
+        parentheses, exclamation points, question marks, ellipses, and
+        commas. Em-dash and semicolon use are especially strong
+        personal-style markers.</p>
+        <div class="compare-grid">
+          <div class="compare-card">
+            <h4>Em-dash-heavy</h4>
+            <p class="ex">The result — and this matters — was a kind
+            of stylistic homogenization. Students started turning in
+            work that sounded like everyone else's work — polished,
+            uniform, oddly empty.</p>
+            <p class="muted">3 em dashes in ~35 words = ~43 per 500w.</p>
+          </div>
+          <div class="compare-card">
+            <h4>Semicolon-heavy</h4>
+            <p class="ex">The result was a kind of stylistic
+            homogenization; students turned in work that sounded like
+            everyone else's work; the polish was uniform; the prose
+            was oddly empty.</p>
+            <p class="muted">3 semicolons in ~30 words = ~50 per 500w.</p>
+          </div>
+        </div>
+        <p class="muted">5+ punctuation types matching in rate → Strong;
+        3-4 → Partial; fewer → No Match. "Matching" means both within
+        50% of each other or both at zero.</p>
+      </article>
+    </section>
+
+    {# -- Section 3: Discourse -- #}
+    <section id="section-3">
+      <h2>§3 Discourse organization</h2>
+
+      <article class="entry" id="paragraphs">
+        <h3>3.1 Paragraph Structure & Topic Sentence Position</h3>
+        <p>Where the paragraph's main claim sits relative to its
+        sentences.</p>
+        <div class="compare-grid">
+          <div class="compare-card">
+            <h4>Topic first</h4>
+            <p class="ex"><em>Voice is something writers build, not
+            something they find.</em> When a student says they're
+            "trying to find their voice," what they usually mean is
+            that they're trying to figure out which choices feel
+            theirs. Those choices accumulate across drafts.</p>
+          </div>
+          <div class="compare-card">
+            <h4>Topic last</h4>
+            <p class="ex">Students often describe voice as something
+            external — out there, waiting. They talk about "finding
+            it" the way you'd find a lost wallet. But voice doesn't
+            work like that. <em>Voice is something writers build, not
+            something they find.</em></p>
+          </div>
+        </div>
+        <p class="muted">Other positions: <em>embedded</em> (middle
+        sentence) and <em>distributed</em> (no single sentence
+        dominates). The detector is heuristic — it scores sentences by
+        claim-marker presence and topic-term density. Recommend human
+        review.</p>
+      </article>
+
+      <article class="entry" id="transitions">
+        <h3>3.2 Transition Strategy</h3>
+        <p>How paragraphs connect to each other. Three approaches.</p>
+        <div class="compare-grid three">
+          <div class="compare-card">
+            <h4>Explicit transitional</h4>
+            <p class="ex">"<em>However</em>, this approach has
+            limits..."</p>
+            <p class="ex">"<em>Furthermore</em>, the data suggest..."</p>
+            <p class="ex">"<em>On the other hand</em>, some argue..."</p>
+            <p class="muted">Overt connectors at paragraph starts.</p>
+          </div>
+          <div class="compare-card">
+            <h4>Metadiscursive</h4>
+            <p class="ex">"<em>Now I want to discuss</em> the
+            implications..."</p>
+            <p class="ex">"<em>Let me turn to</em> the second
+            problem..."</p>
+            <p class="ex">"<em>In this section</em> I will examine..."</p>
+            <p class="muted">Writer narrates the argument's
+            structure.</p>
+          </div>
+          <div class="compare-card">
+            <h4>Implicit</h4>
+            <p class="ex">"<em>Universities have responded slowly.</em>
+            Faculty meetings convened..."</p>
+            <p class="ex">"<em>The technology was already widely
+            adopted.</em> Students reported using it..."</p>
+            <p class="muted">Reader infers the connection from content
+            alone.</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="entry" id="evidence-claim">
+        <h3>3.3 Evidence-to-Claim Sequencing</h3>
+        <p>Four common patterns for relating claims to support.</p>
+        <ul class="cat-list">
+          <li><strong>Claim → Evidence → Interpretation:</strong>
+            <em>"AI tools homogenize student writing. In Smith
+            (2024), only 12% of AI-assisted drafts retained the
+            student's pre-tool sentence-length signature. This
+            suggests that surface-level grammar correction is
+            inseparable from voice flattening."</em></li>
+          <li><strong>Claim → Evidence (no interpretation):</strong>
+            <em>"AI tools homogenize student writing. In Smith
+            (2024), only 12% of drafts retained their original
+            signature."</em>
+            (No "this suggests..." — the evidence speaks for itself.)</li>
+          <li><strong>Evidence → Claim:</strong> <em>"In Smith
+            (2024), 88% of AI-assisted drafts converged toward a
+            shared sentence-length profile. Across multiple
+            institutions, similar patterns appear. The pattern is
+            now widespread."</em></li>
+          <li><strong>Claim → Elaboration:</strong> <em>"AI tools
+            homogenize student writing. Imagine a class of twenty,
+            each writer with their own rhythms, and then imagine the
+            same class after three weeks of running everything
+            through the same tool: the voices converge."</em>
+            (No external evidence — reasoning, hypotheticals,
+            personal experience.)</li>
+        </ul>
+      </article>
+
+      <article class="entry" id="metadiscourse">
+        <h3>3.4 Metadiscourse</h3>
+        <p>Moments where the writer talks about the text or the reader
+        rather than the subject matter. Two subcategories.</p>
+        <div class="compare-grid">
+          <div class="compare-card">
+            <h4>Textual metadiscourse</h4>
+            <p class="ex"><em>In this essay I will</em> argue that
+            voice is built, not found. <em>As I mentioned above</em>,
+            the apprenticeship matters. <em>The following section</em>
+            takes up the implications. <em>To summarize:</em>
+            smoothing is loss.</p>
+            <p class="muted">References to the text's own structure.</p>
+          </div>
+          <div class="compare-card">
+            <h4>Interpersonal metadiscourse</h4>
+            <p class="ex"><em>You might think</em> this is overstated.
+            <em>I believe</em> it isn't. <em>One could argue</em> that
+            students will find their voice eventually. <em>It is
+            important to note</em> that "eventually" is doing a lot of
+            work in that sentence.</p>
+            <p class="muted">Direct address to the reader, writer
+            stance.</p>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    {# -- Section 4: Register -- #}
+    <section id="section-4">
+      <h2>§4 Register and stance</h2>
+
+      <article class="entry" id="register">
+        <h3>4.1 Register Classification</h3>
+        <p>The text's overall formality level. Four labels.</p>
+        <div class="compare-grid">
+          <div class="compare-card">
+            <h4>Formal</h4>
+            <p class="ex">The proliferation of generative tools
+            necessitates a reconceptualization of authorship in higher
+            education. Institutions must articulate policies that
+            delineate appropriate use, lest the prevailing ambiguity
+            undermine the integrity of scholarly assessment.</p>
+            <p class="muted">No first/second person, no contractions,
+            Latinate vocabulary, complex subordination.</p>
+          </div>
+          <div class="compare-card">
+            <h4>Semi-formal</h4>
+            <p class="ex">I argue that the proliferation of generative
+            tools requires us to rethink authorship in higher
+            education. Institutions need to articulate policies that
+            specify appropriate use, since the current ambiguity is
+            undermining assessment.</p>
+            <p class="muted">First-person allowed ("I argue"), avoids
+            second person, mostly Latinate but lighter.</p>
+          </div>
+        </div>
+        <div class="compare-grid">
+          <div class="compare-card">
+            <h4>Informal</h4>
+            <p class="ex">I think AI tools are basically forcing us to
+            rethink what counts as someone's own work. Schools have to
+            get their act together and just say what's okay and
+            what's not, because right now everyone is making it up as
+            they go.</p>
+            <p class="muted">First & second person, contractions,
+            Germanic vocabulary, informal hedges, shorter sentences.</p>
+          </div>
+          <div class="compare-card">
+            <h4>Mixed</h4>
+            <p class="ex">The proliferation of generative tools
+            necessitates a reconceptualization of authorship. But
+            honestly, schools haven't figured out what to do, and
+            students are basically left to figure it out on their
+            own.</p>
+            <p class="muted">First sentence formal; the rest informal.
+            Features from two levels in different parts of the text.</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="entry" id="consistency">
+        <h3>4.2 Register Consistency</h3>
+        <p>Whether the register holds throughout the text or shifts
+        between paragraphs. The tool reports each shift with paragraph
+        index and direction.</p>
+        <div class="example">
+          <p class="ex-label">Shifting register example:</p>
+          <p>The contemporary moment presents an unprecedented
+          challenge for pedagogical practice in the writing
+          classroom.</p>
+          <p>...</p>
+          <p>So basically, what I'm saying is, none of us have any
+          idea what we're doing right now, and I think we should just
+          be honest about that.</p>
+          <p class="muted">Paragraph 1 is formal; paragraph 2 is
+          informal. The tool would flag this as a register shift at
+          paragraph 2.</p>
+        </div>
+        <p class="muted">Register inconsistency can indicate multiple
+        authorial processes (different sections drafted differently)
+        or normal variation in a developing writer. The tool reports
+        the shift; it doesn't interpret the cause.</p>
+      </article>
+
+      <article class="entry" id="pronouns">
+        <h3>4.3 Pronoun Profile</h3>
+        <p>The mix of first-singular, first-plural, second-person, and
+        third-person pronouns. One of the most reliable register
+        markers.</p>
+        <div class="compare-grid">
+          <div class="compare-card">
+            <h4>First-singular dominant</h4>
+            <p class="ex"><em>I</em> noticed something when <em>I</em>
+            started reading <em>my</em> students' drafts. <em>My</em>
+            sense is that voice is what <em>I</em>'m really trying to
+            preserve. <em>I</em> kept asking <em>myself</em> why
+            <em>I</em> cared.</p>
+          </div>
+          <div class="compare-card">
+            <h4>Third-person dominant</h4>
+            <p class="ex">Students develop voice through accumulated
+            stylistic decisions. <em>They</em> figure out which
+            patterns feel like <em>theirs</em>; <em>they</em> refine
+            <em>their</em> preferences across drafts.
+            <em>Their</em> voice emerges from <em>their</em> choices.</p>
+          </div>
+        </div>
+        <div class="compare-grid">
+          <div class="compare-card">
+            <h4>Second-person dominant</h4>
+            <p class="ex"><em>You</em> might think voice is something
+            <em>you</em> just have. But the more <em>you</em> write,
+            the more <em>you</em> realize <em>you</em>'re making
+            choices. <em>Your</em> voice is whatever pattern
+            <em>your</em> choices fall into.</p>
+            <p class="muted">Common in instructional / advice prose.</p>
+          </div>
+          <div class="compare-card">
+            <h4>Impersonal / no pronouns</h4>
+            <p class="ex">Voice in writing develops through accumulated
+            choices about syntax, vocabulary, and paragraph structure.
+            The development is gradual. The result is recognizable
+            without being announced.</p>
+            <p class="muted">Common in formal academic prose.</p>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    {# -- Section 5: Ratings -- #}
+    <section id="ratings">
+      <h2>§5 Comparison Ratings</h2>
+      <article class="entry">
+        <p>Each of the 15 comparison features gets one of four ratings,
+        based on thresholds defined in the
+        <a href="https://github.com/justalewis/Stylometric-Comparison-Tool/blob/main/docs/methodology.md"
+        target="_blank" rel="noopener">methodology doc</a>.</p>
+        <div class="rating-grid">
+          <div class="rating-card">
+            <span class="rating rating-strong-match">Strong Match</span>
+            <p>Both texts behave the same way on this feature, within
+            the spec's thresholds.</p>
+          </div>
+          <div class="rating-card">
+            <span class="rating rating-partial-match">Partial Match</span>
+            <p>The texts agree on the dominant pattern but diverge on
+            secondary measurements.</p>
+          </div>
+          <div class="rating-card">
+            <span class="rating rating-no-match">No Match</span>
+            <p>The texts behave differently on this feature.</p>
+          </div>
+          <div class="rating-card">
+            <span class="rating rating-indeterminate">Indeterminate</span>
+            <p>Not enough signal — sample too short, no relevant
+            tokens, length difference too large, or fewer than two
+            paragraphs.</p>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    {# -- Section 6: AI-writing signs -- #}
+    <section id="ai-signs">
+      <h2>§6 AI-Writing Signs</h2>
+      <p class="lede">
+        Eight stylistic markers commonly found in large-language-model
+        output, drawn from
+        <a href="https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing"
+        target="_blank" rel="noopener">Wikipedia's <em>Signs of AI
+        writing</em> catalog</a>. The tool reports per-500w rates and
+        example hits; it does <strong>not</strong> rate these as
+        match/no-match. They are descriptive markers, not diagnostic
+        tests. Humans use every one of these patterns.
+      </p>
+      <p class="lede">
+        For each sign below, the left column shows AI-style writing
+        that triggers the marker; the right column rewrites the same
+        idea without it.
+      </p>
+
+      <article class="entry" id="ai-vocabulary">
+        <h3>AI Vocabulary</h3>
+        <p>Words documented as statistically frequent in LLM output
+        post-2022: <code>delve</code>, <code>tapestry</code>,
+        <code>underscore</code>, <code>pivotal</code>,
+        <code>vibrant</code>, <code>meticulous</code>,
+        <code>showcasing</code>, <code>intricate</code>,
+        <code>fostering</code>, <code>highlighting</code>,
+        <code>enhance</code>, and others. Three time-stratified lists
+        (2023–mid-24, mid-24–mid-25, mid-25+) — newer lists are more
+        diagnostic because older words have leaked into general
+        writing.</p>
+        <div class="compare-grid">
+          <div class="compare-card">
+            <h4>With AI vocabulary</h4>
+            <p class="ex">Education is undergoing a <em>vibrant</em>
+            transformation, with technology playing a <em>pivotal</em>
+            role in <em>shaping</em> the <em>evolving</em> landscape.
+            This <em>intricate</em> interplay <em>underscores</em> the
+            <em>crucial</em> need for <em>meticulous</em>
+            implementation, <em>fostering</em> deeper engagement.</p>
+          </div>
+          <div class="compare-card">
+            <h4>Without</h4>
+            <p class="ex">Education is changing, and technology is now
+            central to how it works. The mix of policy and practice
+            means we need to roll these tools out carefully so students
+            actually learn from them.</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="entry" id="promotional">
+        <h3>Promotional Phrasing</h3>
+        <p>Travel-guide / press-release style: <code>boasts a</code>,
+        <code>nestled in</code>, <code>in the heart of</code>,
+        <code>diverse array</code>, <code>natural beauty</code>,
+        <code>commitment to excellence</code>,
+        <code>state-of-the-art</code>, <code>world-class</code>,
+        <code>renowned for</code>.</p>
+        <div class="compare-grid">
+          <div class="compare-card">
+            <h4>With promotional phrasing</h4>
+            <p class="ex"><em>Nestled in the heart of</em> the
+            university's curriculum, the writing program <em>boasts a
+            diverse array</em> of courses, <em>renowned for</em> its
+            <em>commitment to excellence</em>.</p>
+          </div>
+          <div class="compare-card">
+            <h4>Without</h4>
+            <p class="ex">The writing program offers a range of
+            courses, including first-year composition, advanced
+            rhetoric, and the senior thesis seminar.</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="entry" id="significance">
+        <h3>Significance Emphasis</h3>
+        <p>Generic statements that connect the subject to broader
+        importance without earning it: <code>stands as a testament
+        to</code>, <code>pivotal role</code>, <code>underscores its
+        importance</code>, <code>evolving landscape</code>,
+        <code>indelible mark</code>, <code>setting the stage
+        for</code>.</p>
+        <div class="compare-grid">
+          <div class="compare-card">
+            <h4>With significance markers</h4>
+            <p class="ex">This breakthrough <em>stands as a testament
+            to</em> human ingenuity, <em>underscoring its pivotal
+            role</em> in <em>shaping</em> the future of education.
+            The development <em>marks a turning point</em> with
+            <em>lasting impact</em>.</p>
+          </div>
+          <div class="compare-card">
+            <h4>Without</h4>
+            <p class="ex">This is an important advance. It will change
+            how schools work.</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="entry" id="vague-attribution">
+        <h3>Vague Attribution</h3>
+        <p>References to unnamed authorities: <code>experts argue</code>,
+        <code>industry reports</code>, <code>several sources</code>,
+        <code>leading scholars suggest</code>, <code>observers have
+        noted</code>, <code>research indicates</code>.</p>
+        <div class="compare-grid">
+          <div class="compare-card">
+            <h4>Vague</h4>
+            <p class="ex"><em>Industry reports</em> and <em>leading
+            experts</em> have noted the technology's impact, with
+            <em>several sources</em> suggesting that adoption rates
+            continue to climb. <em>Research indicates</em> measurable
+            benefits across institutions.</p>
+          </div>
+          <div class="compare-card">
+            <h4>Specific</h4>
+            <p class="ex">A 2024 EDUCAUSE survey of 422 institutions
+            found that 73% had drafted at least preliminary AI
+            policies, up from 31% in 2023 (EDUCAUSE 2024, p. 14).</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="entry" id="negative-parallelism">
+        <h3>Negative Parallelisms</h3>
+        <p>Contrastive constructions that deny one characterization
+        before asserting another: <code>not just X but Y</code>,
+        <code>not only X but also Y</code>, <code>it is not X, it is
+        Y</code>.</p>
+        <div class="compare-grid">
+          <div class="compare-card">
+            <h4>With negative parallelism</h4>
+            <p class="ex">AI is <em>not just</em> a tool, <em>but</em>
+            a transformative force. It is <em>not only</em> reshaping
+            education <em>but also</em> redefining what we mean by
+            authorship. <em>It is not</em> a passing trend; <em>it
+            is</em> a fundamental shift.</p>
+          </div>
+          <div class="compare-card">
+            <h4>Without</h4>
+            <p class="ex">AI is reshaping education and changing what
+            authorship means. It looks like a lasting shift, not a
+            passing trend.</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="entry" id="participial-tails">
+        <h3>Participial Pseudo-Analysis</h3>
+        <p>Sentences ending in a comma + <code>-ing</code> clause that
+        makes an unattributed analytical claim. Common starters:
+        <code>highlighting</code>, <code>underscoring</code>,
+        <code>emphasizing</code>, <code>ensuring</code>,
+        <code>reflecting</code>, <code>fostering</code>.</p>
+        <div class="compare-grid">
+          <div class="compare-card">
+            <h4>With participial tails</h4>
+            <p class="ex">Schools are adopting AI tools, <em>fostering
+            meaningful engagement across communities</em>. Faculty
+            have updated assessment practices, <em>ensuring
+            sustainable academic integrity</em>. Students benefit,
+            <em>highlighting the importance of inclusive
+            implementation</em>.</p>
+          </div>
+          <div class="compare-card">
+            <h4>Without</h4>
+            <p class="ex">Schools are adopting AI tools because they
+            find them useful. Faculty have updated assessment
+            practices in response. Students benefit when the rollout
+            includes accommodations for varied needs.</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="entry" id="rule-of-three">
+        <h3>Rule of Three</h3>
+        <p>Three parallel items in a list or series:
+        <code>X, Y, and Z</code>. Common in human writing too, but
+        overused in LLM output for rhythmic effect. The tool flags
+        triplets where all three items share the same part of speech
+        (all adjectives, all nouns, or all proper nouns).</p>
+        <div class="compare-grid">
+          <div class="compare-card">
+            <h4>With rule-of-three (overused)</h4>
+            <p class="ex">The new framework engages
+            <em>institutions, disciplines, and communities</em>.
+            It addresses <em>policy, pedagogy, and practice</em>.
+            It serves <em>students, faculty, and administrators</em>.
+            The result is <em>thoughtful, inclusive, and
+            sustainable</em>.</p>
+            <p class="muted">Four triplets in three sentences.</p>
+          </div>
+          <div class="compare-card">
+            <h4>Without</h4>
+            <p class="ex">The new framework brings together everyone
+            who has a stake in how the institution handles AI tools.
+            It covers what we should teach, how we should assess, and
+            who should be at the table when policies are set.</p>
+            <p class="muted">One triplet, used purposefully.</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="entry" id="conclusion-formulas">
+        <h3>Conclusion Formulas</h3>
+        <p>Stock closing patterns: <code>despite its challenges</code>,
+        <code>looking ahead</code>, <code>the future outlook
+        remains</code>, <code>in conclusion</code>, <code>moving
+        forward</code>, <code>navigating these challenges</code>.</p>
+        <div class="compare-grid">
+          <div class="compare-card">
+            <h4>With conclusion formulas</h4>
+            <p class="ex"><em>Despite its many challenges</em>, the
+            <em>future outlook</em> for AI in education
+            <em>remains promising</em>. <em>Looking ahead</em>,
+            institutions will continue
+            <em>navigating these challenges</em> as the field
+            <em>moves forward</em>.</p>
+          </div>
+          <div class="compare-card">
+            <h4>Without</h4>
+            <p class="ex">There are real problems with how AI is being
+            adopted in schools, and we don't know yet which ones will
+            be solved by better policy and which ones will just stay
+            with us. The honest answer to "what happens next" is that
+            we'll find out.</p>
+          </div>
+        </div>
+      </article>
+
+    </section>
+
+    <footer>
+      <nav class="topnav" style="justify-content: center;">
+        <a href="{{ url_for('index') }}">← Back to the tool</a>
+      </nav>
+      <p class="muted" style="text-align: center; margin-top: 1rem;">
+        For the methodology behind each measurement,
+        see <a href="https://github.com/justalewis/Stylometric-Comparison-Tool/blob/main/docs/methodology.md"
+        target="_blank" rel="noopener">docs/methodology.md</a>.
+        For pedagogical framing,
+        see <a href="https://github.com/justalewis/Stylometric-Comparison-Tool/blob/main/docs/pedagogy.md"
+        target="_blank" rel="noopener">docs/pedagogy.md</a>.
+      </p>
+    </footer>
+  </div>
+</body>
+</html>

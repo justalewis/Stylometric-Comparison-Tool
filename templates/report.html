@@ -26,7 +26,11 @@
       <h1>Stylometric Comparison — Report</h1>
       {% if topic %}<p class="lede"><strong>Topic hint:</strong> {{ topic }}</p>{% endif %}
       <nav class="topnav">
-        <a href="{{ url_for('index') }}">← New comparison</a>
+        <span>
+          <a href="{{ url_for('index') }}">← New comparison</a>
+          <span style="margin: 0 0.6rem; color: var(--rule);">·</span>
+          <a href="{{ url_for('glossary_page') }}" target="_blank" rel="noopener">Glossary</a>
+        </span>
         <form method="post" action="{{ url_for('compare_route') }}" class="inline">
           <input type="hidden" name="text_a" value="{{ text_a }}">
           <input type="hidden" name="text_b" value="{{ text_b }}">
@@ -36,7 +40,8 @@
         </form>
       </nav>
       <p class="muted" style="margin-top: 0.5rem; font-size: 0.85rem;">
-        Hover any dotted-underlined term for a plain-language definition.
+        Hover any dotted-underlined term for a plain-language definition,
+        or open the <a href="{{ url_for('glossary_page') }}" target="_blank" rel="noopener">full glossary</a> for examples.
       </p>
     </header>
 

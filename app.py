@@ -72,6 +72,11 @@ def index():
     return render_template("index.html")
 
 
+@app.route("/glossary", methods=["GET"])
+def glossary_page():
+    return render_template("glossary.html")
+
+
 def _resolve_text(form_key: str, file_key: str, label: str, errors: list[str]) -> str:
     """Prefer an uploaded file over the textarea; return extracted plain text."""
     uploaded = request.files.get(file_key)

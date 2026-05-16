@@ -436,6 +436,127 @@ details > * { margin-top: 0.3rem; }
   font-style: italic;
 }
 
+/* -- Glossary page -- */
+.glossary-page { max-width: 980px; }
+.glossary-page h2 {
+  font-size: 1.5rem;
+  margin: 2.5rem 0 1rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 2px solid var(--accent-soft);
+}
+.glossary-page h3 {
+  font-size: 1.1rem;
+  margin: 1.25rem 0 0.4rem;
+  color: var(--ink);
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 700;
+}
+.glossary-page .entry {
+  margin: 1.25rem 0 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--rule);
+}
+.glossary-page .entry:last-child { border-bottom: none; }
+.glossary-page .entry > p:first-of-type { margin-top: 0; }
+
+.gloss-toc {
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 1rem 1.25rem;
+  margin: 1.5rem 0 2.5rem;
+  font-size: 0.92rem;
+  columns: 2;
+  column-gap: 2rem;
+}
+.gloss-toc ol { padding-left: 1.2rem; margin: 0; }
+.gloss-toc ol ol {
+  font-size: 0.88rem;
+  margin: 0.2rem 0 0.4rem;
+  color: var(--muted);
+}
+.gloss-toc a { color: var(--accent); text-decoration: none; }
+.gloss-toc a:hover { text-decoration: underline; }
+
+.example {
+  background: var(--paper);
+  border-left: 3px solid var(--accent-soft);
+  padding: 0.6rem 1rem;
+  margin: 0.75rem 0;
+  border-radius: 0 4px 4px 0;
+}
+.example .ex-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+  margin: 0 0 0.4rem;
+}
+.example p { margin: 0.3rem 0; }
+.example p.muted { font-size: 0.85rem; font-style: italic; }
+
+.compare-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 0.85rem 0;
+}
+.compare-grid.three { grid-template-columns: repeat(3, 1fr); }
+.compare-card {
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 0.8rem 1rem;
+}
+.compare-card h4 {
+  margin: 0 0 0.5rem;
+  font-size: 0.92rem;
+  color: var(--accent);
+  font-weight: 700;
+}
+.compare-card p.ex {
+  margin: 0 0 0.4rem;
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  line-height: 1.55;
+  color: var(--ink);
+}
+.compare-card p.muted {
+  font-size: 0.82rem;
+  margin: 0.4rem 0 0;
+  font-style: italic;
+}
+
+ul.cat-list {
+  padding-left: 1.2rem;
+  margin: 0.5rem 0;
+}
+ul.cat-list li {
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.rating-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.85rem;
+  margin: 0.75rem 0;
+}
+.rating-card {
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 0.75rem 1rem;
+}
+.rating-card .rating { margin-bottom: 0.4rem; display: inline-block; }
+.rating-card p { margin: 0.3rem 0 0; font-size: 0.9rem; }
+
+@media (max-width: 800px) {
+  .compare-grid, .compare-grid.three, .rating-grid { grid-template-columns: 1fr; }
+  .gloss-toc { columns: 1; }
+}
+
 footer {
   margin-top: 3rem;
   padding-top: 1.25rem;
