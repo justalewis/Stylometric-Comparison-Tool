@@ -13,6 +13,13 @@ classifier. It describes lexical and structural patterns and reports the
 degree of convergence or divergence between two profiles. The analyst draws
 their own conclusions. See [docs/limitations.md](docs/limitations.md).
 
+> **For instructors:** the tool was built specifically to support
+> classroom conversations about voice, style, and stylistic
+> consistency — including the conversation that opens when a student's
+> draft suddenly sounds nothing like their in-class work. The framing
+> and the suggested workflows are in **[docs/pedagogy.md](docs/pedagogy.md)**.
+> Read that first if you plan to use the tool with students.
+
 ---
 
 ## What it does
@@ -202,23 +209,43 @@ Deeper code walkthrough in [docs/architecture.md](docs/architecture.md).
 
 ## Documentation index
 
+**For users**
+
+- **[Pedagogy](docs/pedagogy.md)** — the instructor's guide.
+  Classroom workflows (self-comparison across drafts, cross-genre
+  comparison, AI-augmentation conversations), framings for talking
+  to students about voice, sample reflection prompts. The framing
+  the tool was built to support.
+- **[Worked examples](docs/examples.md)** — two end-to-end
+  comparisons with real numbers. Formal-vs-informal human prose,
+  and an AI-flavored sample that exercises every AI-writing-signs
+  metric.
+- **[FAQ](docs/faq.md)** — use cases, methodology accuracy,
+  privacy, licensing, common questions about the output.
+- **[Glossary](docs/glossary.md)** — plain-language definitions
+  of every term used in the report. Same content appears as hover
+  tooltips on dotted-underlined terms in the browser.
+
+**For maintainers**
+
 - **[Methodology](docs/methodology.md)** — every feature explained: what
   the spec asked for, what the code does, how the comparison rating is
   computed, and what each rating means. Includes Wikipedia "Signs of AI
   writing" crosswalk for the original 15 features.
-- **[AI-writing signs](docs/ai-signs.md)** — the 8 new profile-only
+- **[AI-writing signs](docs/ai-signs.md)** — the 8 profile-only
   metrics drawn from Wikipedia's catalog: detection rules, per-metric
   word lists, limitations, calibration guidance, and Wikipedia source
   links for each sign.
-- **[Glossary](docs/glossary.md)** — plain-language definitions of every
-  term used in the report. Same content is exposed as hover tooltips
-  on dotted-underlined terms in the browser.
 - **[Architecture](docs/architecture.md)** — module map, data flow,
   dependency rationale, and conventions.
 - **[Deployment](docs/deployment.md)** — Fly.io operations: provisioning,
   secrets, scaling, region selection, troubleshooting.
 - **[Limitations](docs/limitations.md)** — what the tool is *not*, where
   results are most reliable, and known caveats per feature.
+- **[Contributing](CONTRIBUTING.md)** — development setup, the
+  recipe for adding a new feature, style conventions, what kinds of
+  PRs are likely to merge.
+- **[Changelog](CHANGELOG.md)** — version history.
 - **[Specification](docs/spec.md)** — the original feature spec, kept
   verbatim as the source of truth for what the tool implements.
 
@@ -226,5 +253,5 @@ Deeper code walkthrough in [docs/architecture.md](docs/architecture.md).
 
 ## License
 
-No license file is included. The repository is private; all rights
-reserved by default. Add a license if/when sharing publicly.
+[GPL v3](LICENSE). Intentionally copyleft — see
+[docs/faq.md](docs/faq.md) for the reasoning.
