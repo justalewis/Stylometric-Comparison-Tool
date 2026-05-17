@@ -90,33 +90,27 @@ Two delivery formats:
 
 ## Running locally
 
-### Prerequisites
+For a full plain-language walkthrough — including how to install
+Python, set up a virtual environment, and troubleshoot common
+problems — see **[docs/install.md](docs/install.md)**.
 
-- Python 3.12 (3.10+ works; tested on 3.12)
-- pip
-
-### Setup
+The compressed version, for those already familiar with Python
+projects:
 
 ```powershell
-git clone https://github.com/justalewis/stylometric-compare.git
-cd stylometric-compare
+git clone https://github.com/justalewis/Stylometric-Comparison-Tool.git
+cd Stylometric-Comparison-Tool
 
-# Optional but recommended: virtualenv
 python -m venv .venv
-.venv\Scripts\Activate.ps1
+.venv\Scripts\Activate.ps1            # macOS/Linux: source .venv/bin/activate
 
 pip install -r requirements.txt
 python -m spacy download en_core_web_sm
+
+python app.py                          # → http://127.0.0.1:5050
 ```
 
-### Run the dev server
-
-```powershell
-python app.py
-```
-
-Visit <http://127.0.0.1:5050>. The tool runs publicly — no
-authentication.
+The tool runs publicly with no authentication.
 
 ### Run analyses programmatically
 
@@ -143,16 +137,24 @@ md_string = render_markdown(result)
 
 ---
 
-## Deployment
+## Deploying your own copy
 
-The project ships with a `Dockerfile` and `fly.toml` for Fly.io. Full
-guide: [docs/deployment.md](docs/deployment.md).
+The project ships with a `Dockerfile` and `fly.toml` for Fly.io.
+For a plain-language step-by-step — installing flyctl, signing up
+for Fly, picking a unique app name, deploying, custom domains,
+cost expectations — see **[docs/deploy.md](docs/deploy.md)**.
 
-Short version:
+For ongoing operations on an already-deployed instance (logs,
+scaling, region migration, troubleshooting), see
+[docs/operations.md](docs/operations.md).
+
+The compressed version:
 
 ```powershell
-fly apps create stylometric-compare
-fly deploy --app stylometric-compare --ha=false
+# Edit fly.toml: change app = "stylometric-compare" to your-chosen-name
+fly apps create your-chosen-name
+fly deploy --ha=false
+# → https://your-chosen-name.fly.dev/
 ```
 
 The Docker image is ~130 MB. The default `fly.toml` provisions a single
@@ -192,7 +194,9 @@ stylometric-compare/
 └── docs/
     ├── methodology.md           Feature-by-feature breakdown of what the tool measures
     ├── architecture.md          Module map, data flow, dependency rationale
-    ├── deployment.md            Fly.io operations
+    ├── install.md               Plain-language local install walkthrough
+    ├── deploy.md                Plain-language Fly.io deploy walkthrough
+    ├── operations.md            Fly.io operations / maintenance reference
     ├── limitations.md           Caveats, scope, what this tool is NOT
     └── spec.md                  Original specification (verbatim)
 ```
@@ -202,6 +206,17 @@ Deeper code walkthrough in [docs/architecture.md](docs/architecture.md).
 ---
 
 ## Documentation index
+
+**Getting started**
+
+- **[Install locally](docs/install.md)** — plain-language
+  walkthrough for getting the tool running on your own machine.
+  Covers prerequisites, virtual environments, dependencies, and
+  common problems.
+- **[Deploy your own copy](docs/deploy.md)** — plain-language
+  walkthrough for putting your own copy on the internet using
+  Fly.io. Covers signup, naming, deploying, custom domains, and
+  cost expectations.
 
 **For users**
 
@@ -232,8 +247,9 @@ Deeper code walkthrough in [docs/architecture.md](docs/architecture.md).
   links for each sign.
 - **[Architecture](docs/architecture.md)** — module map, data flow,
   dependency rationale, and conventions.
-- **[Deployment](docs/deployment.md)** — Fly.io operations: provisioning,
-  secrets, scaling, region selection, troubleshooting.
+- **[Operations](docs/operations.md)** — Fly.io operations for an
+  already-deployed instance: logs, scaling, region migration,
+  troubleshooting, machine commands.
 - **[Limitations](docs/limitations.md)** — what the tool is *not*, where
   results are most reliable, and known caveats per feature.
 - **[Contributing](CONTRIBUTING.md)** — development setup, the

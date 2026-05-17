@@ -8,12 +8,27 @@ features, patch versions are bug fixes.
 
 ## [Unreleased]
 
+### Added
+- `docs/install.md` — plain-language walkthrough for installing the
+  tool on your own machine. Covers prerequisites, virtual
+  environments, dependencies, common errors.
+- `docs/deploy.md` — plain-language walkthrough for deploying a
+  fork to Fly.io. Covers flyctl install, app naming, region
+  selection, custom domains, optional re-adding of auth, cost
+  expectations, common errors.
+
+### Changed
+- Renamed `docs/deployment.md` to `docs/operations.md` to reflect
+  what its content actually covers (maintenance of an already-
+  deployed instance) and to make room for the new `deploy.md`
+  walkthrough. References updated in README and elsewhere.
+
 ### Removed
 - HTTP Basic Auth gate. The tool is now publicly accessible — no
   `STYLOMETRIC_PASSWORD` required. The `@app.before_request` handler,
   `_credentials_ok` helper, and the two `STYLOMETRIC_USERNAME` /
   `STYLOMETRIC_PASSWORD` environment-variable reads are deleted.
-  README, FAQ, deployment.md, and architecture.md updated to reflect
+  README, FAQ, operations.md, and architecture.md updated to reflect
   public access. To re-introduce authentication later, restore the
   removed handler from git history.
 
@@ -130,7 +145,9 @@ features, patch versions are bug fixes.
 - `README.md` — overview, install, run, deploy.
 - `docs/methodology.md` — feature-by-feature breakdown.
 - `docs/architecture.md` — module map and data flow.
-- `docs/deployment.md` — Fly.io operations.
+- `docs/operations.md` — Fly.io operations (formerly
+  `deployment.md`; renamed to make room for `deploy.md` as the
+  plain-language deploy walkthrough).
 - `docs/limitations.md` — what the tool is not.
 - `docs/spec.md` — the original specification.
 
