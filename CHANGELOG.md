@@ -8,6 +8,15 @@ features, patch versions are bug fixes.
 
 ## [Unreleased]
 
+### Changed
+- Design tokens lifted out of this project and into the new
+  [Lewis Design System](https://github.com/justalewis/lewis-design-system)
+  repo, served from GitHub Pages at
+  <https://justalewis.github.io/lewis-design-system/v1/tokens.css>.
+  Templates now `<link>` that URL instead of a local `static/tokens.css`
+  (which is deleted). A single push to the design-system repo now
+  updates the look of every project that consumes the same URL.
+
 ### Added
 - **Single-text analysis mode** at `/analyze`. Same stylometric
   pipeline as comparison mode, but takes one text and produces a
