@@ -127,6 +127,21 @@ textarea:focus, input[type=text]:focus {
 }
 .panel textarea { flex: 1; }
 
+/* Single-text form (analyze.html) reuses .panel without the .grid wrapper. */
+.panel.single {
+  margin-bottom: 1rem;
+}
+
+/* Single-text report uses .profile alone (no two-column grid). */
+.profile.single {
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 1.25rem 1.75rem;
+  max-width: 880px;
+  margin: 0 auto;
+}
+
 .upload {
   margin-top: 0.5rem;
   padding: 0.6rem 0.75rem;

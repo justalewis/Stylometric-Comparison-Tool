@@ -29,6 +29,8 @@
         <span>
           <a href="{{ url_for('index') }}">← New comparison</a>
           <span style="margin: 0 0.6rem; color: var(--rule);">·</span>
+          <a href="{{ url_for('analyze_route') }}">Analyze a single text</a>
+          <span style="margin: 0 0.6rem; color: var(--rule);">·</span>
           <a href="{{ url_for('glossary_page') }}" target="_blank" rel="noopener">Glossary</a>
         </span>
         <form method="post" action="{{ url_for('compare_route') }}" class="inline">

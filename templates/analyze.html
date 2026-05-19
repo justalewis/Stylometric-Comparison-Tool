@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Stylometric Analysis</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Stylometric Analysis</h1>
+      <p class="lede">
+        Paste a single piece of writing (300–1500 words). The tool produces
+        a stylometric profile across lexical, syntactic, discourse, and register
+        features, plus eight AI-writing-signs markers drawn from
+        <a href="https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing" target="_blank" rel="noopener">Wikipedia's catalog</a>.
+        It describes what the text does linguistically; it does not assert
+        authorship, AI generation, or academic integrity conclusions.
+      </p>
+      <p class="muted" style="margin-top: 0.5rem;">
+        Want to compare two texts instead?
+        <a href="{{ url_for('index') }}">Switch to comparison mode</a>.
+        New here? The <a href="{{ url_for('glossary_page') }}">glossary</a>
+        walks through every metric with examples.
+      </p>
+    </header>
+
+    {% if errors %}
+      <div class="errors">
+        {% for e in errors %}<p>{{ e }}</p>{% endfor %}
+      </div>
+    {% endif %}
+
+    <form method="post" action="{{ url_for('analyze_route') }}" enctype="multipart/form-data">
+      <div class="panel single">
+        <span class="label">Text</span>
+        <textarea name="text" rows="18" placeholder="Paste the sample here…">{{ text or '' }}</textarea>
+        <div class="upload">
+          <label class="file-label" for="file">or upload a file</label>
+          <input id="file" type="file" name="file"
+                 accept=".txt,.md,.markdown,.docx,.pdf,.json,.html,.htm">
+          <span class="muted file-help">.txt, .md, .docx, .pdf, .json, .html — overrides the textarea</span>
+        </div>
+      </div>
+
+      <label class="topic">
+        <span class="label">Topic hint <span class="muted">(optional)</span></span>
+        <input type="text" name="topic" value="{{ topic or '' }}"
+               placeholder="e.g. AI in education, climate policy, etc. Helps separate topical from habitual word repetition.">
+      </label>
+
+      <div class="actions">
+        <button type="submit" name="format" value="html" class="primary">
+          Run analysis
+        </button>
+        <button type="submit" name="format" value="markdown" class="secondary">
+          Run &amp; download as Markdown
+        </button>
+      </div>
+    </form>
+  </div>
+</body>
+</html>

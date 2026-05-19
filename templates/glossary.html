@@ -10,7 +10,11 @@
   <div class="container glossary-page">
     <header>
       <nav class="topnav">
-        <a href="{{ url_for('index') }}">← Back to the tool</a>
+        <span>
+          <a href="{{ url_for('index') }}">← Compare two texts</a>
+          <span style="margin: 0 0.6rem; color: var(--rule);">·</span>
+          <a href="{{ url_for('analyze_route') }}">Analyze a single text</a>
+        </span>
       </nav>
       <h1>Glossary</h1>
       <p class="lede">
@@ -875,8 +879,10 @@
     </section>
 
     <footer>
-      <nav class="topnav" style="justify-content: center;">
-        <a href="{{ url_for('index') }}">← Back to the tool</a>
+      <nav class="topnav" style="justify-content: center; gap: 0.6rem;">
+        <a href="{{ url_for('index') }}">← Compare two texts</a>
+        <span style="color: var(--rule);">·</span>
+        <a href="{{ url_for('analyze_route') }}">Analyze a single text</a>
       </nav>
       <p class="muted" style="text-align: center; margin-top: 1rem;">
         For the methodology behind each measurement,

@@ -9,6 +9,15 @@ features, patch versions are bug fixes.
 ## [Unreleased]
 
 ### Added
+- **Single-text analysis mode** at `/analyze`. Same stylometric
+  pipeline as comparison mode, but takes one text and produces a
+  profile-only report (no comparison summary). New
+  `templates/analyze.html` (form), `templates/report_single.html`
+  (report), `render_markdown_single()` in `markdown_export.py`,
+  and `/analyze` GET+POST routes in `app.py`. Comparison mode at
+  `/` is unchanged. Cross-navigation links added on every page so
+  switching between the two modes is one click. The `analyzer/`
+  Python API now re-exports `analyze` alongside `compare`.
 - `docs/install.md` — plain-language walkthrough for installing the
   tool on your own machine. Covers prerequisites, virtual
   environments, dependencies, common errors.

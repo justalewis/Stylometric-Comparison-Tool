@@ -161,6 +161,23 @@ def _section_ai_signs(p: dict, out: StringIO) -> None:
     out.write("\n")
 
 
+def render_markdown_single(profile: dict, topic: str | None = None) -> str:
+    """Render a single-text profile as Markdown (no comparison summary)."""
+    out = StringIO()
+    out.write("# Stylometric Analysis Report\n\n")
+    if topic:
+        out.write(f"**Topic hint:** {topic}\n\n")
+
+    out.write("## Profile\n\n")
+    _section_meta(profile, out)
+    _section_lexical(profile, out)
+    _section_syntactic(profile, out)
+    _section_discourse(profile, out)
+    _section_register(profile, out)
+    _section_ai_signs(profile, out)
+    return out.getvalue()
+
+
 def render_markdown(result: dict) -> str:
     """Render the full comparison result as Markdown."""
     out = StringIO()

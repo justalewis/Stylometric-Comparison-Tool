@@ -1,10 +1,17 @@
 # Stylometric Comparison
 
-A Flask + spaCy tool that takes two text samples and produces a structured
-comparative stylometric profile across fifteen features spanning lexis,
-syntax, discourse organization, and register. Designed for instructors,
-editors, and researchers who want a transparent description of *what each
-text does linguistically* rather than a black-box authorship verdict.
+A Flask + spaCy tool for stylometric analysis of writing. Two modes:
+
+- **Comparison mode (`/`)** — paste two samples; the tool produces a
+  comparative profile across fifteen features and rates each as Strong /
+  Partial / No / Indeterminate Match.
+- **Single-text mode (`/analyze`)** — paste one sample; the tool produces
+  the same stylometric profile without the comparison summary.
+
+Both modes cover lexis, syntax, discourse organization, register, and the
+eight AI-writing-signs metrics. Designed for instructors, editors, and
+researchers who want a transparent description of *what the text does
+linguistically* rather than a black-box authorship verdict.
 
 **Live:** <https://stylometric-compare.fly.dev/>
 
@@ -114,6 +121,20 @@ The tool runs publicly with no authentication.
 
 ### Run analyses programmatically
 
+For a single text:
+
+```python
+from analyzer import analyze
+
+profile = analyze("<text>", topic="optional topic hint")
+
+# profile["lexical"], profile["syntactic"], profile["discourse"],
+# profile["register"], profile["ai_signs"]                          → feature blocks
+# profile["meta"]                                                   → word count, paragraph count, quoted-material stats
+```
+
+For a comparison of two texts:
+
 ```python
 from analyzer import compare
 
@@ -131,8 +152,9 @@ result = compare(
 To emit Markdown:
 
 ```python
-from analyzer.markdown_export import render_markdown
-md_string = render_markdown(result)
+from analyzer.markdown_export import render_markdown, render_markdown_single
+md_compare = render_markdown(result)        # comparison report
+md_single  = render_markdown_single(profile, topic="...")  # single-text report
 ```
 
 ---
@@ -187,8 +209,11 @@ stylometric-compare/
 │   ├── markdown_export.py       Markdown rendering
 │   └── extract.py               File-upload text extraction
 ├── templates/
-│   ├── index.html               Input form
-│   └── report.html              Comparison report
+│   ├── index.html               Comparison-mode input form
+│   ├── analyze.html             Single-text input form
+│   ├── report.html              Comparison report (two profiles + summary)
+│   ├── report_single.html       Single-text report (one profile, no summary)
+│   └── glossary.html            In-app reference page
 ├── static/
 │   └── style.css                Warm-neutral serif aesthetic
 └── docs/
