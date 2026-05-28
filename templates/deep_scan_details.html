@@ -91,31 +91,31 @@
           <h4>Examples</h4>
           {% for ex in m.examples[:5] %}
             {% if ex is mapping %}
-              {% if ex.sentence %}
-                <div class="ai-example">"{{ ex.sentence }}"</div>
-              {% elif ex['items'] is defined %}
+              {% if 'sentence' in ex %}
+                <div class="ai-example">"{{ ex['sentence'] }}"</div>
+              {% elif 'items' in ex %}
                 <div class="ai-example">triplet: <code>{{ ex['items']|join(' / ') }}</code></div>
-              {% elif ex.term is defined %}
-                <div class="ai-example"><code>{{ ex.term }}</code></div>
-              {% elif ex.members_present is defined %}
+              {% elif 'term' in ex %}
+                <div class="ai-example"><code>{{ ex['term'] }}</code></div>
+              {% elif 'members_present' in ex %}
                 <div class="ai-example">
-                  Paragraph {{ ex.paragraph }}, cluster <em>{{ ex.cluster }}</em>:
-                  {% for w in ex.members_present %}<code>{{ w }}</code>{% if not loop.last %}, {% endif %}{% endfor %}
+                  Paragraph {{ ex['paragraph'] }}, cluster <em>{{ ex['cluster'] }}</em>:
+                  {% for w in ex['members_present'] %}<code>{{ w }}</code>{% if not loop.last %}, {% endif %}{% endfor %}
                 </div>
-              {% elif ex.from_paragraph is defined %}
+              {% elif 'from_paragraph' in ex %}
                 <div class="ai-example">
-                  Paragraphs {{ ex.from_paragraph }} → {{ ex.to_paragraph }}:
-                  {{ ex.dimensions_shifted }} dimensions shifted
+                  Paragraphs {{ ex['from_paragraph'] }} → {{ ex['to_paragraph'] }}:
+                  {{ ex['dimensions_shifted'] }} dimensions shifted
                   <span class="muted">
-                    (sent Δ {{ ex.sentence_length_delta }},
-                    TTR Δ {{ ex.ttr_delta }},
-                    1sg Δ {{ ex.first_sg_delta }},
-                    contr Δ {{ ex.contractions_delta }})
+                    (sent Δ {{ ex['sentence_length_delta'] }},
+                    TTR Δ {{ ex['ttr_delta'] }},
+                    1sg Δ {{ ex['first_sg_delta'] }},
+                    contr Δ {{ ex['contractions_delta'] }})
                   </span>
                 </div>
-              {% elif ex.type is defined %}
+              {% elif 'type' in ex %}
                 <div class="ai-example">
-                  {{ ex.type|replace('_', ' ') }}: "{{ ex.heading }}" (line {{ ex.line }})
+                  {{ ex['type']|replace('_', ' ') }}: "{{ ex['heading'] }}" (line {{ ex['line'] }})
                 </div>
               {% endif %}
             {% else %}

@@ -379,9 +379,11 @@
           </h4>
           {% if ai.metrics.rule_of_three.examples %}
             {% for ex in ai.metrics.rule_of_three.examples[:3] %}
-              <div class="ai-example">
-                <code>{{ ex['items']|join(' / ') }}</code>
-              </div>
+              {% if 'items' in ex %}
+                <div class="ai-example">
+                  <code>{{ ex['items']|join(' / ') }}</code>
+                </div>
+              {% endif %}
             {% endfor %}
           {% else %}<em class="muted">no hits</em>{% endif %}
         </div>
