@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Deep Scan — Profile</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://justalewis.github.io/lewis-design-system/v1/tokens.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <span class="local-badge">LOCALHOST ONLY</span>
+      <h1>Deep Scan — Profile</h1>
+      {% if topic %}<p class="lede"><strong>Topic hint:</strong> {{ topic }}</p>{% endif %}
+      <nav class="topnav">
+        <span>
+          <a href="{{ url_for('deep_scan_route') }}">← New deep scan</a>
+          <span style="margin: 0 0.6rem; color: var(--rule);">·</span>
+          <a href="{{ url_for('analyze_route') }}">Single-text analysis</a>
+          <span style="margin: 0 0.6rem; color: var(--rule);">·</span>
+          <a href="{{ url_for('index') }}">Compare two texts</a>
+        </span>
+        <form method="post" action="{{ url_for('deep_scan_details_route') }}" class="inline">
+          <input type="hidden" name="text"  value="{{ text }}">
+          <input type="hidden" name="topic" value="{{ topic }}">
+          <button type="submit" class="primary small">View full details →</button>
+        </form>
+      </nav>
+    </header>
+
+    {# --- Summary card --- #}
+    <section class="summary" style="background: var(--surface-blush-soft);">
+      <h2>Summary</h2>
+      <div class="ds-summary-grid">
+        <div class="ds-stat">
+          <span class="ds-stat-label">Total markers</span>
+          <span class="ds-stat-value">{{ result.total_markers_raw }}</span>
+          <span class="ds-stat-sub">{{ result.total_markers_per_500 }} per 500 words</span>
+        </div>
+        <div class="ds-stat">
+          <span class="ds-stat-label">Density</span>
+          <span class="ds-stat-value ds-density ds-density-{{ result.density }}">{{ result.density.upper().replace('_', ' ') }}</span>
+          <span class="ds-stat-sub">low &lt; 15 · moderate 15–40 · high 40–80 · very high 80+</span>
+        </div>
+        <div class="ds-stat">
+          <span class="ds-stat-label">Words analyzed</span>
+          <span class="ds-stat-value">{{ result.n_words }}</span>
+          <span class="ds-stat-sub">{{ result.metric_count }} metrics evaluated</span>
+        </div>
+      </div>
+
+      <p class="ai-disclaimer" style="margin-top: 1rem;">
+        This report describes stylistic patterns. It does <strong>not</strong>
+        assert authorship, AI generation, or academic integrity conclusions.
+        Humans use every one of these patterns — clusters across multiple
+        metrics are the meaningful signal, not any single hit.
+      </p>
+    </section>
+
+    {# --- Marker count visualization --- #}
+    <section class="ds-bars">
+      <h2>Markers by metric</h2>
+      <p class="muted" style="margin-bottom: 1rem;">
+        Bar length is proportional to the per-500-word rate. Hover a row
+        for the metric description; click the metric name to jump to the
+        Wikipedia source section.
+      </p>
+
+      {% set max_rate = namespace(v=1) %}
+      {% for m in result.metrics.values() %}
+        {% if m.per_500 > max_rate.v %}{% set max_rate.v = m.per_500 %}{% endif %}
+      {% endfor %}
+
+      <ol class="ds-bar-list">
+        {% for key, m in result.metrics.items() %}
+        <li class="ds-bar-row" title="{{ m.description }}">
+          <span class="ds-bar-label">
+            <a href="{{ m.wikipedia_section }}" target="_blank" rel="noopener">{{ m.name }}</a>
+            <span class="ds-bar-tier ds-bar-tier-{{ m.tier }}">{{ m.tier }}</span>
+          </span>
+          <span class="ds-bar-track">
+            <span class="ds-bar-fill"
+                  style="width: {{ ((m.per_500 / max_rate.v) * 100) if m.raw_count > 0 else 0 }}%;
+                         background: {% if m.raw_count == 0 %}var(--muted-2){% elif m.per_500 >= 20 %}var(--status-error-fg){% elif m.per_500 >= 5 %}var(--status-warn-fg){% else %}var(--accent-soft){% endif %};"></span>
+          </span>
+          <span class="ds-bar-count">
+            <strong>{{ m.raw_count }}</strong>
+            <span class="muted">/ {{ m.per_500 }}</span>
+          </span>
+        </li>
+        {% endfor %}
+      </ol>
+    </section>
+
+    {# --- Export bar --- #}
+    <section class="ds-export">
+      <h2>Export findings</h2>
+      <p class="muted" style="margin-bottom: 0.75rem;">
+        Download the full deep-scan report as a self-contained file.
+        All three formats include the same summary, per-metric findings,
+        and example hits.
+      </p>
+      <form method="post" action="{{ url_for('deep_scan_export_route') }}" class="ds-export-form">
+        <input type="hidden" name="text"  value="{{ text }}">
+        <input type="hidden" name="topic" value="{{ topic }}">
+        <div class="actions">
+          <button type="submit" name="format" value="md" class="secondary">Download .md</button>
+          <button type="submit" name="format" value="docx" class="secondary">Download .docx</button>
+          <button type="submit" name="format" value="pdf" class="secondary">Download .pdf</button>
+        </div>
+      </form>
+    </section>
+
+    {# --- Next step CTA --- #}
+    <section style="margin-top: 3rem; text-align: center;">
+      <form method="post" action="{{ url_for('deep_scan_details_route') }}" class="inline">
+        <input type="hidden" name="text"  value="{{ text }}">
+        <input type="hidden" name="topic" value="{{ topic }}">
+        <button type="submit" class="primary">View full details →</button>
+      </form>
+      <p class="muted" style="margin-top: 0.5rem;">
+        Full details: every metric expanded with top hits, example sentences,
+        and per-metric notes.
+      </p>
+    </section>
+
+    <footer>
+      <p class="muted">
+        Source for all markers:
+        <a href="{{ result.wikipedia_url }}" target="_blank" rel="noopener">{{ result.wikipedia_url }}</a>
+      </p>
+    </footer>
+  </div>
+</body>
+</html>

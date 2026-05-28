@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Deep Scan — Details</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://justalewis.github.io/lewis-design-system/v1/tokens.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <span class="local-badge">LOCALHOST ONLY</span>
+      <h1>Deep Scan — Details</h1>
+      {% if topic %}<p class="lede"><strong>Topic hint:</strong> {{ topic }}</p>{% endif %}
+      <nav class="topnav">
+        <span>
+          <a href="{{ url_for('deep_scan_route') }}">← New deep scan</a>
+          <span style="margin: 0 0.6rem; color: var(--rule);">·</span>
+          <form method="post" action="{{ url_for('deep_scan_route') }}" class="inline" style="display: inline;">
+            <input type="hidden" name="text"  value="{{ text }}">
+            <input type="hidden" name="topic" value="{{ topic }}">
+            <button type="submit" class="topnav-link">Back to profile</button>
+          </form>
+        </span>
+        <form method="post" action="{{ url_for('deep_scan_export_route') }}" class="inline">
+          <input type="hidden" name="text"  value="{{ text }}">
+          <input type="hidden" name="topic" value="{{ topic }}">
+          <button type="submit" name="format" value="md" class="secondary small">.md</button>
+          <button type="submit" name="format" value="docx" class="secondary small">.docx</button>
+          <button type="submit" name="format" value="pdf" class="secondary small">.pdf</button>
+        </form>
+      </nav>
+    </header>
+
+    {# --- Compact summary header --- #}
+    <section class="ds-detail-summary">
+      <div class="ds-summary-row">
+        <strong>{{ result.total_markers_raw }}</strong> total markers
+        ({{ result.total_markers_per_500 }}/500w) ·
+        density <span class="ds-density-inline ds-density-{{ result.density }}">{{ result.density.upper().replace('_', ' ') }}</span> ·
+        {{ result.n_words }} words ·
+        {{ result.metric_count }} metrics
+      </div>
+    </section>
+
+    {# --- Per-metric deep dives --- #}
+    <section class="ds-detail-list">
+      {% for key, m in result.metrics.items() %}
+      <article class="ds-metric-detail" id="m-{{ key }}">
+        <h2>
+          {{ m.name }}
+          <span class="ds-bar-tier ds-bar-tier-{{ m.tier }}">{{ m.tier }}</span>
+        </h2>
+        {% if m.description %}
+          <p class="ds-metric-desc">{{ m.description }}</p>
+        {% endif %}
+
+        <ul class="ds-metric-meta">
+          <li><strong>Count:</strong> {{ m.raw_count }}</li>
+          <li><strong>Rate:</strong> {{ m.per_500 }} per 500 words</li>
+          <li><strong>Wikipedia:</strong>
+            <a href="{{ m.wikipedia_section }}" target="_blank" rel="noopener">↗ source section</a>
+          </li>
+          <li><code>{{ key }}</code></li>
+        </ul>
+
+        {% if m.notes %}
+          <p class="ds-metric-notes">{{ m.notes }}</p>
+        {% endif %}
+
+        {% if m.top_hits %}
+        <div class="ds-metric-hits">
+          <h4>Top hits</h4>
+          <ul class="sub">
+          {% for hit, count in m.top_hits[:12] %}
+            {% if hit is string %}
+              <li><code>{{ hit }}</code> ({{ count }}×)</li>
+            {% else %}
+              <li><code>{{ hit }}</code>: {{ count }}</li>
+            {% endif %}
+          {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+
+        {% if m.examples %}
+        <div class="ds-metric-examples">
+          <h4>Examples</h4>
+          {% for ex in m.examples[:5] %}
+            {% if ex is mapping %}
+              {% if ex.sentence %}
+                <div class="ai-example">"{{ ex.sentence }}"</div>
+              {% elif ex['items'] is defined %}
+                <div class="ai-example">triplet: <code>{{ ex['items']|join(' / ') }}</code></div>
+              {% elif ex.term is defined %}
+                <div class="ai-example"><code>{{ ex.term }}</code></div>
+              {% elif ex.members_present is defined %}
+                <div class="ai-example">
+                  Paragraph {{ ex.paragraph }}, cluster <em>{{ ex.cluster }}</em>:
+                  {% for w in ex.members_present %}<code>{{ w }}</code>{% if not loop.last %}, {% endif %}{% endfor %}
+                </div>
+              {% elif ex.from_paragraph is defined %}
+                <div class="ai-example">
+                  Paragraphs {{ ex.from_paragraph }} → {{ ex.to_paragraph }}:
+                  {{ ex.dimensions_shifted }} dimensions shifted
+                  <span class="muted">
+                    (sent Δ {{ ex.sentence_length_delta }},
+                    TTR Δ {{ ex.ttr_delta }},
+                    1sg Δ {{ ex.first_sg_delta }},
+                    contr Δ {{ ex.contractions_delta }})
+                  </span>
+                </div>
+              {% elif ex.type is defined %}
+                <div class="ai-example">
+                  {{ ex.type|replace('_', ' ') }}: "{{ ex.heading }}" (line {{ ex.line }})
+                </div>
+              {% endif %}
+            {% else %}
+              <div class="ai-example">{{ ex }}</div>
+            {% endif %}
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if m.details %}
+        <details class="ds-metric-detailsblock">
+          <summary>Raw details</summary>
+          <ul class="sub">
+            {% for k, v in m.details.items() %}
+              <li><code>{{ k }}</code>: <code>{{ v }}</code></li>
+            {% endfor %}
+          </ul>
+        </details>
+        {% endif %}
+      </article>
+      {% endfor %}
+    </section>
+
+    {# --- Export bar (bottom of details) --- #}
+    <section class="ds-export" style="margin-top: 3rem;">
+      <h2>Export findings</h2>
+      <form method="post" action="{{ url_for('deep_scan_export_route') }}" class="ds-export-form">
+        <input type="hidden" name="text"  value="{{ text }}">
+        <input type="hidden" name="topic" value="{{ topic }}">
+        <div class="actions">
+          <button type="submit" name="format" value="md" class="secondary">Download .md</button>
+          <button type="submit" name="format" value="docx" class="secondary">Download .docx</button>
+          <button type="submit" name="format" value="pdf" class="secondary">Download .pdf</button>
+        </div>
+      </form>
+    </section>
+
+    <footer>
+      <p class="muted">
+        Source for all markers:
+        <a href="{{ result.wikipedia_url }}" target="_blank" rel="noopener">{{ result.wikipedia_url }}</a>
+      </p>
+    </footer>
+  </div>
+</body>
+</html>

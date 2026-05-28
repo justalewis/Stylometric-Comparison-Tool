@@ -1,16 +1,20 @@
 # Stylometric Comparison
 
-A Flask + spaCy tool for stylometric analysis of writing. Two modes:
+A Flask + spaCy tool for stylometric analysis of writing. Three modes:
 
 - **Comparison mode (`/`)** — paste two samples; the tool produces a
   comparative profile across fifteen features and rates each as Strong /
   Partial / No / Indeterminate Match.
 - **Single-text mode (`/analyze`)** — paste one sample; the tool produces
   the same stylometric profile without the comparison summary.
+- **Deep Scan (`/deep-scan`)** — *localhost-only.* Runs all 26 AI-writing-
+  signs metrics (the standard 8 plus 18 more from Wikipedia's full
+  catalog) against a single text, with a profile view, a details view,
+  and `.md` / `.docx` / `.pdf` export.
 
-Both modes cover lexis, syntax, discourse organization, register, and the
-eight AI-writing-signs metrics. Designed for instructors, editors, and
-researchers who want a transparent description of *what the text does
+The first two modes cover lexis, syntax, discourse organization, register,
+and the eight AI-writing-signs metrics. Designed for instructors, editors,
+and researchers who want a transparent description of *what the text does
 linguistically* rather than a black-box authorship verdict.
 
 **Live:** <https://stylometric-compare.fly.dev/>

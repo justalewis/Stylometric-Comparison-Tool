@@ -169,6 +169,18 @@ samples, click *Run comparison*, and you've got it.
 To stop the server, go back to the terminal where it's running and
 press **Ctrl + C**.
 
+### A note on the Deep Scan page
+
+When you run the tool locally, there's an extra page at
+<http://127.0.0.1:5050/deep-scan> that runs all 26 AI-writing-signs
+metrics against a single text and lets you export the findings as
+`.md`, `.docx`, or `.pdf`. This page is **localhost-only by
+design** — it returns 404 on any other host, including the public
+deployment. It's a kitchen-sink analysis intended for analyst-in-the-
+loop review, which is why it doesn't live on the public site. You'll
+see a small "Deep scan" link in the muted text at the top of the
+single-text analysis page when you're on localhost.
+
 ---
 
 ## Coming back later

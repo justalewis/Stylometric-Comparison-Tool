@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Deep Scan · Stylometric</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://justalewis.github.io/lewis-design-system/v1/tokens.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <span class="local-badge">LOCALHOST ONLY</span>
+      <h1>Deep Scan</h1>
+      <p class="lede">
+        Extended AI-writing-signs analysis against the full
+        <a href="https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing"
+           target="_blank" rel="noopener">Wikipedia <em>Signs of AI writing</em></a>
+        catalog. 26 metrics total — the 8 from the standard report plus
+        18 more covering copula avoidance, knowledge-cutoff disclaimers,
+        markdown artifacts, elegant variation, style shifts across
+        paragraphs, and more.
+      </p>
+      <p class="muted" style="margin-top: 0.5rem;">
+        Want the lighter 8-metric view alongside the rest of the stylometric profile?
+        <a href="{{ url_for('analyze_route') }}">Switch to single-text analysis</a>.
+        Or <a href="{{ url_for('index') }}">compare two texts</a>.
+      </p>
+      <p class="local-note">
+        This page runs only on localhost. It is intentionally not available
+        on the public deployment — the deep-scan view trades carefully
+        framed metrics for a kitchen-sink view that benefits from
+        analyst-in-the-loop interpretation.
+      </p>
+    </header>
+
+    {% if errors %}
+      <div class="errors">
+        {% for e in errors %}<p>{{ e }}</p>{% endfor %}
+      </div>
+    {% endif %}
+
+    <form method="post" action="{{ url_for('deep_scan_route') }}" enctype="multipart/form-data">
+      <div class="panel single">
+        <span class="label">Text</span>
+        <textarea name="text" rows="18" placeholder="Paste the sample here&hellip; Include the original formatting (markdown, line breaks) if you have it — several deep-scan metrics look for markdown artifacts.">{{ text or '' }}</textarea>
+        <div class="upload">
+          <label class="file-label" for="file">or upload a file</label>
+          <input id="file" type="file" name="file"
+                 accept=".txt,.md,.markdown,.docx,.pdf,.json,.html,.htm">
+          <span class="muted file-help">.txt, .md, .docx, .pdf, .json, .html — overrides the textarea</span>
+        </div>
+      </div>
+
+      <label class="topic">
+        <span class="label">Topic hint <span class="muted">(optional)</span></span>
+        <input type="text" name="topic" value="{{ topic or '' }}"
+               placeholder="e.g. AI in education, climate policy. Helps separate topical from habitual repetition.">
+      </label>
+
+      <div class="actions">
+        <button type="submit" class="primary">Run deep scan</button>
+      </div>
+    </form>
+  </div>
+</body>
+</html>

@@ -26,6 +26,13 @@
         <a href="{{ url_for('index') }}">Switch to comparison mode</a>.
         New here? The <a href="{{ url_for('glossary_page') }}">glossary</a>
         walks through every metric with examples.
+        {% if is_localhost %}
+          <br><span class="muted" style="font-size: 0.85rem;">
+            <strong>Local:</strong> the extended
+            <a href="{{ url_for('deep_scan_route') }}">deep scan</a>
+            runs all 26 AI-writing-signs metrics with .md / .docx / .pdf export.
+          </span>
+        {% endif %}
       </p>
     </header>
 

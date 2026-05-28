@@ -8,6 +8,22 @@ features, patch versions are bug fixes.
 
 ## [Unreleased]
 
+### Added
+- **Deep Scan** at `/deep-scan` — a localhost-only extended AI-writing-
+  signs analysis. Runs all 8 metrics from the standard report plus 18
+  new ones (copula avoidance, 'refers to' lead, em-dash overuse, curly
+  quotes, social-media phrasing, debate-claim, heritage puffery,
+  notability puffery, knowledge-cutoff disclaimers, placeholder
+  leftovers, title-case markdown headings, markdown bold density,
+  inline-header lists, markdown artifacts, elegant variation, style
+  shift across paragraphs, skipped heading levels, emoji as
+  formatting). 26 metrics total. Profile view + details view + `.md`
+  / `.docx` / `.pdf` exports. Page returns 404 on any non-localhost
+  host — the gate is automatic via `request.host` check, so the public
+  Fly deployment never serves it. Reportlab added to requirements
+  for PDF generation. The `/analyze` page surfaces a discreet "deep
+  scan" link only when accessed from localhost.
+
 ### Changed
 - Design tokens lifted out of this project and into the new
   [Lewis Design System](https://github.com/justalewis/lewis-design-system)
