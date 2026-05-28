@@ -178,8 +178,23 @@ metrics against a single text and lets you export the findings as
 design** — it returns 404 on any other host, including the public
 deployment. It's a kitchen-sink analysis intended for analyst-in-the-
 loop review, which is why it doesn't live on the public site. You'll
-see a small "Deep scan" link in the muted text at the top of the
-single-text analysis page when you're on localhost.
+see a small "Deep scan" link in the muted text at the top of every
+page when you're on localhost.
+
+### One-click launcher (Windows)
+
+The project includes a `start-deep-scan.bat` file in the project root.
+Double-click it from File Explorer (or pin it to your taskbar) and it
+will:
+
+1. Start the local server in a terminal window
+2. Open your default browser to `http://127.0.0.1:5050/deep-scan`
+3. Keep the terminal visible so you can see logs
+
+To stop the server, press **Ctrl + C** in that terminal window or
+close it. The launcher checks that Python is on your `PATH` and that
+it's run from the right folder, and shows a clear error if either is
+off. No need to `cd` or type `python app.py` every time.
 
 ---
 

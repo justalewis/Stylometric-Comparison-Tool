@@ -9,6 +9,11 @@ features, patch versions are bug fixes.
 ## [Unreleased]
 
 ### Added
+- `start-deep-scan.bat` — a Windows one-click launcher in the project
+  root. Double-click to start the local server, open the browser to
+  `/deep-scan`, and keep a terminal window visible. Checks Python is
+  on the PATH and that the script is in the project root; surfaces
+  clear errors if either is off.
 - **Deep Scan** at `/deep-scan` — a localhost-only extended AI-writing-
   signs analysis. Runs all 8 metrics from the standard report plus 18
   new ones (copula avoidance, 'refers to' lead, em-dash overuse, curly
