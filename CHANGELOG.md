@@ -8,6 +8,24 @@ features, patch versions are bug fixes.
 
 ## [Unreleased]
 
+### Changed
+- **Lexical diversity now reports TTR + MATTR + MTLD.** The original
+  Section 1.1 metric (raw type-token ratio) was sensitive to text
+  length: longer samples mechanically show lower TTR as common words
+  repeat. The tool now also computes MATTR (Moving-Average TTR, 100-
+  token sliding window) and MTLD (Measure of Textual Lexical
+  Diversity, threshold 0.72, bidirectional), both length-robust by
+  construction. The comparator uses MATTR as its primary signal with
+  tighter thresholds (Strong ≤ 0.03, Partial ≤ 0.06) when both
+  samples are at least 200 words, and the 2× length-ratio
+  Indeterminate guard drops out of that branch since MATTR doesn't
+  need it. The fallback to raw TTR (with the original looser
+  thresholds and the length-ratio guard reinstated) only triggers
+  when MATTR is unavailable. Small-sample warnings now suppress
+  MATTR under 200 words and MTLD under 100 words, with an explicit
+  message in the report instead of a misleadingly precise number.
+  Methodology, glossary, and tooltips all updated.
+
 ### Added
 - `start-deep-scan.bat` — a Windows one-click launcher in the project
   root. Double-click to start the local server, open the browser to

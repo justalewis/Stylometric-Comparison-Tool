@@ -27,9 +27,24 @@ GLOSSARY: dict[str, str] = {
 
     # -- Section 1: Lexical -------------------------------------------------
     "TTR":
-        "Type-token ratio. The number of distinct word forms (types) divided "
-        "by the total number of word forms (tokens). Higher = more varied "
-        "vocabulary; lower = more repetition.",
+        "Type-token ratio. Distinct word forms divided by total word forms. "
+        "Higher = more varied vocabulary. Mechanically length-sensitive: "
+        "longer texts inevitably show lower TTR as common words repeat. "
+        "For comparison across different-length texts, MATTR or MTLD are "
+        "more defensible.",
+    "MATTR":
+        "Moving-Average Type-Token Ratio. Slides a 100-token window across "
+        "the text and averages the TTR computed within each window. Because "
+        "every window is the same size, MATTR is length-independent — two "
+        "texts of very different total lengths can be compared on equal "
+        "footing. Requires at least 200 tokens to compute.",
+    "MTLD":
+        "Measure of Textual Lexical Diversity. Walks the text counting how "
+        "many tokens are needed before the running TTR drops below 0.72; "
+        "each such span is a 'factor'. MTLD is total tokens divided by "
+        "factor count. Length-robust and considered the most reliable "
+        "lexical-diversity measure for serious stylometric work. Requires "
+        "at least 100 tokens.",
     "Type":
         "A distinct word form. 'The cat sat on the mat' has 6 tokens but 5 "
         "types because 'the' appears twice.",

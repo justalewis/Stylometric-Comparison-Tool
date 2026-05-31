@@ -29,29 +29,68 @@ def _cmp_ttr(a: dict, b: dict) -> dict:
     tb = b["lexical"]["ttr"]
     a_words = a["meta"]["word_count"]
     b_words = b["meta"]["word_count"]
+
+    # Format helper for the per-text display cell.
+    def _fmt(t: dict) -> str:
+        parts = [f"TTR {t['ratio']:.3f}"]
+        if t.get("mattr") is not None:
+            parts.append(f"MATTR {t['mattr']:.3f}")
+        if t.get("mtld") is not None:
+            parts.append(f"MTLD {t['mtld']:.1f}")
+        return " · ".join(parts)
+
     if a_words == 0 or b_words == 0:
-        rating = INDET
-        expl = "Empty text."
-    elif max(a_words, b_words) / min(a_words, b_words) > 2:
-        rating = INDET
-        expl = "Word counts differ by more than 2x; TTR not comparable."
-    else:
-        diff = abs(ta["ratio"] - tb["ratio"])
-        if diff <= 0.05:
+        return {
+            "feature": "1.1 Lexical diversity",
+            "a": _fmt(ta), "b": _fmt(tb),
+            "rating": INDET,
+            "explanation": "Empty text.",
+        }
+
+    # Prefer MATTR — it is length-independent, so two texts of different
+    # lengths can be compared on equal footing without a length-ratio guard.
+    if ta.get("mattr") is not None and tb.get("mattr") is not None:
+        diff = abs(ta["mattr"] - tb["mattr"])
+        if diff <= 0.03:
             rating = STRONG
-            expl = f"Ratios within {diff:.3f} of each other."
-        elif diff <= 0.10:
+            expl = f"MATTR within {diff:.3f} of each other."
+        elif diff <= 0.06:
             rating = PARTIAL
-            expl = f"Ratios differ by {diff:.3f}."
+            expl = f"MATTR differs by {diff:.3f}."
         else:
             rating = NO
-            expl = f"Ratios differ by {diff:.3f} (greater than 0.10)."
+            expl = f"MATTR differs by {diff:.3f} (greater than 0.06)."
+        return {
+            "feature": "1.1 Lexical diversity",
+            "a": _fmt(ta), "b": _fmt(tb),
+            "rating": rating,
+            "explanation": expl + " (length-robust MATTR comparison)",
+        }
+
+    # Fall back to raw TTR when MATTR isn't available for at least one
+    # text. Length-sensitive — keep the 2x length guard in this branch.
+    if max(a_words, b_words) / min(a_words, b_words) > 2:
+        return {
+            "feature": "1.1 Lexical diversity",
+            "a": _fmt(ta), "b": _fmt(tb),
+            "rating": INDET,
+            "explanation": (
+                "Sample too short for MATTR and word counts differ by more "
+                "than 2x; raw TTR not reliably comparable."
+            ),
+        }
+    diff = abs(ta["ratio"] - tb["ratio"])
+    if diff <= 0.05:
+        rating, expl = STRONG, f"TTR within {diff:.3f} of each other."
+    elif diff <= 0.10:
+        rating, expl = PARTIAL, f"TTR differs by {diff:.3f}."
+    else:
+        rating, expl = NO, f"TTR differs by {diff:.3f} (greater than 0.10)."
     return {
-        "feature": "1.1 Type-Token Ratio",
-        "a": f"{ta['ratio']:.3f} ({ta['types']}/{ta['tokens']})",
-        "b": f"{tb['ratio']:.3f} ({tb['types']}/{tb['tokens']})",
+        "feature": "1.1 Lexical diversity",
+        "a": _fmt(ta), "b": _fmt(tb),
         "rating": rating,
-        "explanation": expl,
+        "explanation": expl + " (raw TTR — sample too short for MATTR)",
     }
 
 

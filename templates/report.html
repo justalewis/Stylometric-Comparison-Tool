@@ -119,10 +119,23 @@
 
           <h3>Lexical</h3>
           <ul>
-            <li><strong>{{ gloss('TTR') }}:</strong>
-              {{ '%.3f' % p.lexical.ttr.ratio }}
-              ({{ p.lexical.ttr.types }} {{ gloss('Type', 'types') }} /
-               {{ p.lexical.ttr.tokens }} {{ gloss('Token', 'tokens') }})
+            <li><strong>Lexical diversity:</strong>
+              <ul class="sub">
+                <li>{{ gloss('TTR') }}: {{ '%.3f' % p.lexical.ttr.ratio }}
+                  ({{ p.lexical.ttr.types }} {{ gloss('Type', 'types') }} /
+                  {{ p.lexical.ttr.tokens }} {{ gloss('Token', 'tokens') }})</li>
+                <li>{{ gloss('MATTR') }}:
+                  {% if p.lexical.ttr.mattr is not none %}{{ '%.3f' % p.lexical.ttr.mattr }}
+                    <span class="muted">(window {{ p.lexical.ttr.mattr_window }})</span>
+                  {% else %}<em class="muted">unavailable — sample too short</em>{% endif %}</li>
+                <li>{{ gloss('MTLD') }}:
+                  {% if p.lexical.ttr.mtld is not none %}{{ '%.1f' % p.lexical.ttr.mtld }}
+                    <span class="muted">(threshold {{ p.lexical.ttr.mtld_threshold }})</span>
+                  {% else %}<em class="muted">unavailable — sample too short</em>{% endif %}</li>
+                {% for w in p.lexical.ttr.warnings %}
+                  <li class="warn">{{ w }}</li>
+                {% endfor %}
+              </ul>
             </li>
             <li><strong>{{ gloss('Latinate/Germanic ratio', 'Latinate/Germanic') }}:</strong>
               ratio {{ '%.2f' % p.lexical.latinate_germanic.latinate_ratio }}

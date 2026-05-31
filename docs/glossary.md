@@ -39,7 +39,22 @@ unreliable; 400–1000 words is the ideal range.
 
 **TTR (type-token ratio).** The number of distinct word forms (types)
 divided by the total number of word forms (tokens). Higher TTR = more
-varied vocabulary; lower TTR = more repetition.
+varied vocabulary. Mechanically length-sensitive: as text grows, common
+words inevitably repeat and TTR drops. Kept in the report for backward
+compatibility and very-short-sample reporting; for comparison across
+texts of different lengths, MATTR or MTLD are more defensible.
+
+**MATTR (Moving-Average Type-Token Ratio).** Slides a 100-token window
+across the text and averages the TTR computed within each window. Length-
+independent: two texts of very different total lengths can be compared on
+equal footing. Used as the primary lexical-diversity comparison signal in
+the tool when both samples are at least 200 words.
+
+**MTLD (Measure of Textual Lexical Diversity).** Walks the text counting
+how many tokens are needed before the running TTR drops below 0.72; each
+such span is a "factor". MTLD is total tokens divided by factor count,
+computed bidirectionally and averaged. Length-robust and widely used in
+published stylometric work. Requires at least 100 tokens.
 
 **Type.** A distinct word form. "The cat sat on the mat" has 6 tokens
 but 5 types because "the" appears twice.

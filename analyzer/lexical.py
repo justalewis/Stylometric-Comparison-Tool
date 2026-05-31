@@ -1,6 +1,6 @@
 """Section 1: lexical preferences.
 
-  1.1 Type-token ratio
+  1.1 Lexical diversity (TTR, MATTR, MTLD)
   1.2 Latinate vs. Germanic vocabulary tendency
   1.3 Pet words and habitual phrases
   1.4 Informal hedges, fillers, and intensifiers
@@ -17,6 +17,15 @@ from spacy.tokens import Doc
 from . import wordlists
 
 
+# Validity bounds for length-robust diversity metrics. Below these counts
+# the metric returns None and the report surfaces a warning instead of a
+# misleadingly precise number.
+MATTR_WINDOW = 100
+MATTR_MIN_TOKENS = 200      # need at least 2x the window for a useful average
+MTLD_THRESHOLD = 0.72       # McCarthy & Jarvis (2010) standard
+MTLD_MIN_TOKENS = 100
+
+
 def _content_tokens(doc: Doc) -> list[str]:
     """Return lowercased word forms, excluding punctuation, spaces, numbers."""
     return [
@@ -26,16 +35,108 @@ def _content_tokens(doc: Doc) -> list[str]:
     ]
 
 
+def _mattr(tokens: list[str], window: int = MATTR_WINDOW) -> float | None:
+    """Moving-Average Type-Token Ratio.
+
+    Slides a fixed window across the token list and averages the TTR
+    computed within each window. Length-independent: comparable across
+    texts of very different total lengths. Returns None when the text is
+    shorter than ``MATTR_MIN_TOKENS``.
+    """
+    n = len(tokens)
+    if n < MATTR_MIN_TOKENS or n < window:
+        return None
+    ratios: list[float] = []
+    # Counter-based sliding window: add the entering token, drop the
+    # exiting token, recompute distinct-count incrementally.
+    window_counts: Counter = Counter(tokens[:window])
+    distinct = sum(1 for v in window_counts.values() if v > 0)
+    ratios.append(distinct / window)
+    for i in range(1, n - window + 1):
+        leaving = tokens[i - 1]
+        entering = tokens[i + window - 1]
+        if leaving != entering:
+            window_counts[leaving] -= 1
+            if window_counts[leaving] == 0:
+                distinct -= 1
+            if window_counts[entering] == 0:
+                distinct += 1
+            window_counts[entering] += 1
+        ratios.append(distinct / window)
+    return round(sum(ratios) / len(ratios), 3)
+
+
+def _mtld_one_direction(tokens: list[str], threshold: float = MTLD_THRESHOLD) -> float:
+    """Single-pass MTLD (McCarthy & Jarvis 2010). Internal helper."""
+    factors = 0.0
+    types: set[str] = set()
+    running_count = 0
+    last_ttr = 1.0
+    for tok in tokens:
+        types.add(tok)
+        running_count += 1
+        last_ttr = len(types) / running_count
+        if last_ttr <= threshold:
+            factors += 1
+            types = set()
+            running_count = 0
+            last_ttr = 1.0
+    # Leftover tokens at the tail that didn't reach the threshold:
+    # scale them by how close they came.
+    if running_count > 0 and last_ttr < 1.0:
+        partial = (1.0 - last_ttr) / (1.0 - threshold)
+        factors += partial
+    if factors <= 0:
+        return float(len(tokens))
+    return len(tokens) / factors
+
+
+def _mtld(tokens: list[str], threshold: float = MTLD_THRESHOLD) -> float | None:
+    """Bidirectional MTLD: mean of forward and backward single-pass MTLDs."""
+    if len(tokens) < MTLD_MIN_TOKENS:
+        return None
+    fwd = _mtld_one_direction(tokens, threshold)
+    bwd = _mtld_one_direction(list(reversed(tokens)), threshold)
+    return round((fwd + bwd) / 2, 1)
+
+
 def analyze_ttr(doc: Doc) -> dict:
+    """Compute three lexical-diversity metrics: TTR, MATTR, MTLD.
+
+    TTR is the raw type-token ratio (length-sensitive, kept for backward
+    compatibility and for very-short-sample reporting). MATTR and MTLD
+    are length-robust alternatives — when both texts are long enough
+    they are the more defensible comparison signals.
+    """
     tokens = _content_tokens(doc)
     types = set(tokens)
     n_tokens = len(tokens)
     n_types = len(types)
     ratio = round(n_types / n_tokens, 3) if n_tokens else 0.0
+    mattr = _mattr(tokens)
+    mtld = _mtld(tokens)
+
+    warnings: list[str] = []
+    if n_tokens < MTLD_MIN_TOKENS:
+        warnings.append(
+            f"Sample under {MTLD_MIN_TOKENS} words — MATTR and MTLD suppressed; "
+            f"only raw TTR reported (and TTR is mechanically inflated for short texts)."
+        )
+    elif n_tokens < MATTR_MIN_TOKENS:
+        warnings.append(
+            f"Sample under {MATTR_MIN_TOKENS} words — MATTR suppressed; "
+            f"MTLD and raw TTR reported, but treat as approximate."
+        )
+
     return {
         "tokens": n_tokens,
         "types": n_types,
         "ratio": ratio,
+        "mattr": mattr,
+        "mtld": mtld,
+        "mattr_window": MATTR_WINDOW,
+        "mtld_threshold": MTLD_THRESHOLD,
+        "warnings": warnings,
     }
 
 

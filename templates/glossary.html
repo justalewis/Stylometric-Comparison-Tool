@@ -40,7 +40,7 @@
         <li><a href="#preprocessing">Preprocessing</a></li>
         <li><a href="#section-1">§1 Lexical</a>
           <ol>
-            <li><a href="#ttr">1.1 Type-Token Ratio</a></li>
+            <li><a href="#ttr">1.1 Lexical diversity (TTR / MATTR / MTLD)</a></li>
             <li><a href="#latinate-germanic">1.2 Latinate / Germanic</a></li>
             <li><a href="#pet-words">1.3 Pet Words & Habitual Phrases</a></li>
             <li><a href="#hedges">1.4 Hedges, Fillers, Intensifiers</a></li>
@@ -123,10 +123,11 @@
       <h2>§1 Lexical preferences</h2>
 
       <article class="entry" id="ttr">
-        <h3>1.1 Type-Token Ratio (TTR)</h3>
-        <p>The number of distinct word forms (types) divided by the
-        total number of word forms (tokens). Higher TTR = more varied
-        vocabulary; lower TTR = more repetition.</p>
+        <h3>1.1 Lexical diversity (TTR / MATTR / MTLD)</h3>
+        <p>How varied a writer's vocabulary is across the sample. The
+        tool reports three related measures because each has different
+        strengths.</p>
+
         <div class="compare-grid">
           <div class="compare-card">
             <h4>High TTR (≈0.82)</h4>
@@ -144,9 +145,48 @@
             <p class="muted">31 tokens / 13 types. Heavy repetition.</p>
           </div>
         </div>
-        <p class="muted">Comparison rule: diff ≤ 0.05 = Strong; 0.05–0.10 =
-        Partial; &gt; 0.10 = No Match. If one text is more than 2× the
-        other's length, the rating is Indeterminate (length-effect).</p>
+
+        <p><strong>TTR</strong> — raw type-token ratio.
+        Distinct word forms divided by total word forms. Easy to read
+        but length-sensitive: a 200-word sample will mechanically show
+        higher TTR than a 2000-word sample by the same author, because
+        common words inevitably repeat as text grows. For comparison
+        across texts of different lengths the next two metrics are
+        more defensible.</p>
+
+        <p><strong>MATTR</strong> — Moving-Average Type-Token Ratio.
+        Slides a 100-token window across the text and averages the
+        TTR computed within each window. Because every window is the
+        same size, MATTR is length-independent: two texts of very
+        different total lengths can be compared on equal footing.
+        Requires at least 200 tokens of material to compute.</p>
+
+        <p><strong>MTLD</strong> — Measure of Textual Lexical
+        Diversity. Walks the text counting how many tokens are needed
+        before the running TTR drops below 0.72; each such span is a
+        "factor". MTLD is total tokens divided by factor count.
+        Bidirectional (forward and backward) and length-robust; widely
+        used in published stylometric work. Requires at least 100
+        tokens to compute.</p>
+
+        <p class="muted">
+          <strong>Comparison rule:</strong> the tool compares texts on
+          MATTR when both samples are long enough (≥ 200 words each).
+          MATTR diff ≤ 0.03 → Strong Match; 0.03–0.06 → Partial Match;
+          &gt; 0.06 → No Match. When MATTR is unavailable for either
+          text, the tool falls back to raw TTR with looser thresholds
+          (0.05 / 0.10) and the older 2× length-ratio guard. MTLD is
+          reported in the per-text profile but does not participate
+          in the comparison rating.
+        </p>
+
+        <p class="muted">
+          <strong>Small-sample note:</strong> under 100 words MATTR
+          and MTLD are suppressed and only raw TTR is shown — and at
+          those sizes even TTR is mechanically inflated. Under 200
+          words MATTR is suppressed. The tool surfaces an inline
+          warning whenever a metric is omitted for length reasons.
+        </p>
       </article>
 
       <article class="entry" id="latinate-germanic">

@@ -55,37 +55,82 @@ false-positive cost outweighs the value.
 
 ## Section 1 — Lexical preferences
 
-### 1.1 Type-Token Ratio (TTR)
+### 1.1 Lexical diversity (TTR, MATTR, MTLD)
 
-**What it measures.** Lexical diversity. Higher TTR = more varied
-vocabulary; lower TTR = more repetition.
+**What it measures.** How varied the writer's vocabulary is across the
+sample. The tool reports three related metrics: raw TTR, MATTR
+(length-robust by sliding window), and MTLD (length-robust by factor
+counting). Each addresses a different limitation of the others.
 
-**How it's computed.** Every alphabetic token in the spaCy doc is
-lowercased. The number of *types* (unique forms) is divided by the number
-of *tokens* (total forms). Punctuation, spaces, and digits are excluded.
+**How they're computed.**
 
-**Reported.** Raw type count, raw token count, and the ratio to three
-decimal places.
+- **TTR (Type-Token Ratio).** Every alphabetic token in the spaCy doc
+  is lowercased. The number of *types* (unique forms) is divided by
+  the number of *tokens* (total forms). Punctuation, spaces, and digits
+  are excluded. The standard textbook definition.
+- **MATTR (Moving-Average Type-Token Ratio).** A 100-token window
+  slides one position at a time across the token list. TTR is computed
+  within each window; the windows' TTRs are averaged. Because every
+  window is the same size, MATTR is *length-independent*: a 400-word
+  sample and a 4,000-word sample can be compared directly. Implemented
+  with an incremental Counter so the cost is `O(n)` rather than
+  `O(n × window)`.
+- **MTLD (Measure of Textual Lexical Diversity).** Following McCarthy
+  & Jarvis (2010). The algorithm walks tokens accumulating a running
+  TTR; each time the running TTR drops to or below 0.72, a "factor" is
+  counted and the running state resets. Leftover tokens at the tail
+  are scaled by `(1 − last_TTR) / (1 − 0.72)`. The full MTLD is the
+  total token count divided by the factor count, computed in both
+  directions (forward and backward) and averaged.
+
+**Validity bounds.**
+
+| Metric | Minimum tokens | Notes |
+|---|---|---|
+| TTR | 1 | Reported even on very short samples, but mechanically inflated below ~200 words. |
+| MATTR | 200 | Needs at least 2× the window for a meaningful average. |
+| MTLD | 100 | Below this, factor counts are too noisy. |
+
+When the sample is too short for MATTR or MTLD, the corresponding field
+returns `None` and the per-text profile surfaces an explicit warning
+instead of a misleadingly precise number.
+
+**Reported per text.** Raw token count, raw type count, raw TTR ratio,
+MATTR (or "unavailable"), MTLD (or "unavailable"), plus any
+small-sample warnings.
 
 **Interpretation guide.**
 
-- Above 0.55 in a 500-word sample → relatively high diversity.
-- Below 0.40 → relatively constrained vocabulary with heavy repetition.
+- MATTR is bounded `[0, 1]` like TTR. Values above ~0.78 are typical
+  of varied prose; values below ~0.70 suggest heavy local repetition.
+- MTLD is unbounded but typically falls between 40 and 150 for
+  natural prose. Higher values indicate more sustained diversity
+  before the running TTR exhausts itself.
 
-**Length sensitivity.** TTR drops mechanically as texts grow longer
-(common words start repeating). Comparisons are most meaningful when both
-samples are within 30% of each other in word count. The comparator
-explicitly flags **Indeterminate** when one text is more than 2× the
-other's length.
-
-**Comparison rule.**
+**Comparison rule.** When both texts have MATTR available, the
+comparator uses MATTR (length-robust, no length-ratio guard needed):
 
 | Condition | Rating |
 |---|---|
-| One text more than 2× the other's length | Indeterminate |
-| `\|ratio_a − ratio_b\| ≤ 0.05` | Strong Match |
-| `0.05 < \|ratio_a − ratio_b\| ≤ 0.10` | Partial Match |
-| `\|ratio_a − ratio_b\| > 0.10` | No Match |
+| `\|MATTR_a − MATTR_b\| ≤ 0.03` | Strong Match |
+| `0.03 < \|MATTR_a − MATTR_b\| ≤ 0.06` | Partial Match |
+| `\|MATTR_a − MATTR_b\| > 0.06` | No Match |
+
+When MATTR is unavailable for either text, the comparator falls back
+to raw TTR with the older, looser thresholds and reinstates the 2×
+length-ratio Indeterminate guard for that branch:
+
+| Condition (TTR fallback) | Rating |
+|---|---|
+| Either MATTR unavailable AND one text > 2× the other's length | Indeterminate |
+| `\|TTR_a − TTR_b\| ≤ 0.05` | Strong Match |
+| `0.05 < \|TTR_a − TTR_b\| ≤ 0.10` | Partial Match |
+| `\|TTR_a − TTR_b\| > 0.10` | No Match |
+
+MTLD is reported in the per-text profile but does not participate in
+the comparison rating directly — its scale is harder to threshold
+intuitively, and an analyst who wants to weigh it can read it off the
+profile.
 
 ### 1.2 Latinate vs. Germanic lean
 

@@ -22,7 +22,18 @@ def _section_meta(p: dict, out: StringIO) -> None:
 def _section_lexical(p: dict, out: StringIO) -> None:
     out.write("### Lexical\n\n")
     ttr = p["lexical"]["ttr"]
-    out.write(f"- **TTR**: {ttr['ratio']:.3f} ({ttr['types']} types / {ttr['tokens']} tokens)\n")
+    out.write(f"- **Lexical diversity**\n")
+    out.write(f"  - TTR: {ttr['ratio']:.3f} ({ttr['types']} types / {ttr['tokens']} tokens)\n")
+    if ttr.get("mattr") is not None:
+        out.write(f"  - MATTR: {ttr['mattr']:.3f} (window {ttr['mattr_window']})\n")
+    else:
+        out.write("  - MATTR: unavailable — sample too short\n")
+    if ttr.get("mtld") is not None:
+        out.write(f"  - MTLD: {ttr['mtld']:.1f} (threshold {ttr['mtld_threshold']})\n")
+    else:
+        out.write("  - MTLD: unavailable — sample too short\n")
+    for w in ttr.get("warnings", []):
+        out.write(f"  - ⚠ {w}\n")
     lg = p["lexical"]["latinate_germanic"]
     out.write(
         f"- **Latinate/Germanic**: {lg['latinate_ratio']:.2f} "
