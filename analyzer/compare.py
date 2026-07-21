@@ -197,6 +197,48 @@ def _cmp_hedges(a: dict, b: dict) -> dict:
     }
 
 
+def _cmp_reading_level(a: dict, b: dict) -> dict:
+    """Compare Flesch-Kincaid Grade Level between the two texts."""
+    ra = a["lexical"].get("reading_level") or {}
+    rb = b["lexical"].get("reading_level") or {}
+    ga, gb = ra.get("fk_grade"), rb.get("fk_grade")
+
+    def _fmt(r: dict) -> str:
+        g = r.get("fk_grade")
+        fre = r.get("flesch_reading_ease")
+        if g is None or fre is None:
+            return "unavailable — sample too short"
+        return (
+            f"grade {g:.1f} ({r.get('fk_grade_label', '')}) · "
+            f"ease {fre:.1f} ({r.get('flesch_reading_ease_label', '')})"
+        )
+
+    if ga is None or gb is None:
+        return {
+            "feature": "1.5 Reading level",
+            "a": _fmt(ra), "b": _fmt(rb),
+            "rating": INDET,
+            "explanation": "One or both samples too short for reading-level metrics.",
+        }
+
+    diff = abs(ga - gb)
+    if diff <= 2.0:
+        rating = STRONG
+        expl = f"Grade levels within {diff:.1f} of each other."
+    elif diff <= 4.0:
+        rating = PARTIAL
+        expl = f"Grade levels differ by {diff:.1f}."
+    else:
+        rating = NO
+        expl = f"Grade levels differ by {diff:.1f} (greater than 4.0)."
+    return {
+        "feature": "1.5 Reading level",
+        "a": _fmt(ra), "b": _fmt(rb),
+        "rating": rating,
+        "explanation": expl,
+    }
+
+
 def _cmp_sentence_length(a: dict, b: dict) -> dict:
     sa = a["syntactic"]["sentence_length"]
     sb = b["syntactic"]["sentence_length"]
@@ -519,7 +561,7 @@ def _cmp_pronouns(a: dict, b: dict) -> dict:
 
 
 _COMPARATORS = [
-    _cmp_ttr, _cmp_latinate, _cmp_pet_words, _cmp_hedges,
+    _cmp_ttr, _cmp_latinate, _cmp_pet_words, _cmp_hedges, _cmp_reading_level,
     _cmp_sentence_length, _cmp_openers, _cmp_coord_subord, _cmp_punctuation,
     _cmp_paragraph_structure, _cmp_transitions, _cmp_evidence_claim,
     _cmp_metadiscourse,

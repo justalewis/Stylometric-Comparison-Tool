@@ -11,6 +11,16 @@ markdown file is for readable reference outside the tool.
 
 GLOSSARY: dict[str, str] = {
 
+    # -- Field --------------------------------------------------------------
+    "Stylometry":
+        "The quantitative study of writing style: measurable patterns in how "
+        "a writer chooses words, structures sentences, and organizes "
+        "paragraphs. Draws on computational linguistics, corpus linguistics, "
+        "forensic linguistics, and digital humanities. This tool sits on the "
+        "descriptive end of the field — it counts features and reports "
+        "patterns, leaving interpretation to the analyst rather than issuing "
+        "a verdict.",
+
     # -- Preprocessing ------------------------------------------------------
     "Quoted material":
         "Direct quotations from sources. The tool removes them before analysis "
@@ -80,6 +90,24 @@ GLOSSARY: dict[str, str] = {
         "A booster that strengthens a claim (very, extremely, absolutely, "
         "literally, definitely). High intensifier rates signal emphatic, "
         "often informal register.",
+    "Reading level":
+        "How difficult a text is to read, calculated from word length "
+        "(syllables per word) and sentence length. Reported as both a "
+        "US grade level (Flesch-Kincaid) and a 0-100 ease score "
+        "(Flesch Reading Ease). Reading level tends to correlate with "
+        "the Latinate/Germanic ratio — Latinate-heavy prose is usually "
+        "harder to read because Latinate words are longer.",
+    "Flesch-Kincaid Grade Level":
+        "US school-grade equivalent for reading difficulty. Grade 8 = "
+        "average 8th-grade reader; grade 12 = high school senior; "
+        "grade 16 = college senior; above 16 = graduate / specialist. "
+        "Computed from average sentence length + average syllables per "
+        "word.",
+    "Flesch Reading Ease":
+        "A 0-100 scale where higher = easier to read. 90+ = elementary; "
+        "60-70 = standard/plain-English; 30-50 = college-level; below "
+        "30 = very difficult. Uses the same inputs as Flesch-Kincaid "
+        "Grade Level but inverts the scale so readable prose scores high.",
 
     # -- Section 2: Syntactic -----------------------------------------------
     "Sentence length":

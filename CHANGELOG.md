@@ -8,6 +8,23 @@ features, patch versions are bug fixes.
 
 ## [Unreleased]
 
+### Added
+- **Section 1.5 Reading level** — a new comparison feature reporting
+  Flesch-Kincaid Grade Level and Flesch Reading Ease per text, with a
+  Strong / Partial / No comparator rating on Grade Level distance
+  (≤2 / ≤4 / >4). Both metrics synthesize word length and sentence
+  length into a single interpretable score, and sit within the
+  Lexical section because they provide useful context for the
+  Latinate/Germanic ratio: Latinate-heavy vocabulary usually carries
+  more syllables and drives grade level up. Metrics are suppressed
+  with a warning when the sample has fewer than 50 words or 3
+  sentences. Added via the `textstat` library (new dependency).
+- **Stylometry-as-field callout** on the form pages, the README, and
+  as a new preamble entry in the glossary — a plain-language
+  definition of what stylometry is, what disciplines it draws on
+  (computational, corpus, forensic linguistics; digital humanities),
+  and how descriptive stylometry differs from authorship attribution.
+
 ### Changed
 - **Lexical diversity now reports TTR + MATTR + MTLD.** The original
   Section 1.1 metric (raw type-token ratio) was sensitive to text

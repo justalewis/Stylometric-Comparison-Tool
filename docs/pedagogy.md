@@ -204,7 +204,7 @@ In teaching:
   across multiple metrics are the meaningful signal.
 
 The tool deliberately does **not** rate the AI-signs section as
-"Strong Match" / "No Match" the way the other 15 features are
+"Strong Match" / "No Match" the way the other 16 features are
 rated. The framing is descriptive, not diagnostic. Honor that in
 your conversations with students.
 

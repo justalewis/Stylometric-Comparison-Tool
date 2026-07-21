@@ -16,6 +16,20 @@ group they are listed in the order the report uses them.
 
 ---
 
+## Field
+
+**Stylometry.** The quantitative study of writing style — the measurable
+patterns in how a writer chooses words, structures sentences, and
+organizes paragraphs. It draws on computational linguistics, corpus
+linguistics, forensic linguistics, and the digital humanities. Its
+methods range from descriptive profiling (what this tool does) to
+formal authorship attribution using cross-validated classifiers on
+baseline corpora (what this tool deliberately does not do). Descriptive
+stylometry counts features and reports patterns; the analyst draws the
+conclusions.
+
+---
+
 ## Preprocessing
 
 **Quoted material.** Direct quotations from sources. The tool removes
@@ -91,6 +105,25 @@ argued`) signal academic register.
 **Intensifier.** A booster that strengthens a claim (`very`,
 `extremely`, `absolutely`, `literally`, `definitely`). High
 intensifier rates signal emphatic, often informal register.
+
+**Reading level.** How difficult the text is to read, calculated from
+word length (syllables per word) and sentence length. Reported as
+both a US grade level (Flesch-Kincaid) and a 0–100 ease score (Flesch
+Reading Ease). Reading level tends to correlate with the
+Latinate/Germanic ratio: Latinate-heavy prose is usually harder to
+read because Latinate words are longer.
+
+**Flesch-Kincaid Grade Level.** US school-grade equivalent for reading
+difficulty. Grade 8 = an average 8th-grade reader can follow it;
+grade 12 = high school senior; grade 16 = college senior; anything
+above 16 = graduate / specialist territory. Computed from average
+sentence length plus average syllables per word.
+
+**Flesch Reading Ease.** A 0–100 scale where higher = easier to read.
+90+ = elementary; 60–70 = standard / plain-English; 30–50 =
+college-level; below 30 = very difficult. Uses the same inputs as
+Flesch-Kincaid Grade Level but inverts the scale so readable prose
+scores high.
 
 ---
 
@@ -236,7 +269,7 @@ register markers.
 
 ## Section 5: Comparison ratings
 
-For each of the 15 features, the tool produces one of four ratings:
+For each of the 16 features, the tool produces one of four ratings:
 
 - **Strong Match.** The two texts behave the same way on this
   feature, within the spec's thresholds.

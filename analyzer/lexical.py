@@ -4,6 +4,7 @@
   1.2 Latinate vs. Germanic vocabulary tendency
   1.3 Pet words and habitual phrases
   1.4 Informal hedges, fillers, and intensifiers
+  1.5 Reading level (Flesch-Kincaid Grade, Flesch Reading Ease)
 """
 
 from __future__ import annotations
@@ -12,9 +13,17 @@ import re
 from collections import Counter
 from typing import Iterable
 
+import textstat
 from spacy.tokens import Doc
 
 from . import wordlists
+
+
+# Reading-level metrics are meaningless below a handful of full sentences;
+# below these thresholds the values return None and the report surfaces a
+# warning instead.
+READING_MIN_WORDS = 50
+READING_MIN_SENTENCES = 3
 
 
 # Validity bounds for length-robust diversity metrics. Below these counts
@@ -293,10 +302,80 @@ def analyze_hedges(doc: Doc) -> dict:
     }
 
 
+def _fk_grade_label(grade: float) -> str:
+    """Human-readable interpretation of a Flesch-Kincaid Grade Level."""
+    if grade < 6:  return "elementary"
+    if grade < 9:  return "middle school"
+    if grade < 13: return "high school"
+    if grade < 17: return "college"
+    return "graduate / specialist"
+
+
+def _fre_label(fre: float) -> str:
+    """Human-readable band for a Flesch Reading Ease score."""
+    if fre >= 90: return "very easy"
+    if fre >= 80: return "easy"
+    if fre >= 70: return "fairly easy"
+    if fre >= 60: return "standard"
+    if fre >= 50: return "fairly difficult"
+    if fre >= 30: return "difficult"
+    return "very difficult"
+
+
+def analyze_reading_level(doc: Doc) -> dict:
+    """Flesch-Kincaid Grade Level + Flesch Reading Ease.
+
+    Both metrics take word length (syllables per word) and sentence length
+    into account. Grade Level maps to a US school-grade equivalent;
+    Reading Ease is a 0-100 scale where higher = easier to read.
+    Undefined on very short samples — returns None + warning when the
+    sample has fewer than READING_MIN_WORDS words or READING_MIN_SENTENCES
+    sentences.
+    """
+    text = doc.text.strip()
+    n_words = sum(1 for t in doc if t.is_alpha)
+    n_sents = sum(1 for _ in doc.sents)
+    warnings: list[str] = []
+
+    if not text or n_words < READING_MIN_WORDS or n_sents < READING_MIN_SENTENCES:
+        warnings.append(
+            f"Sample under {READING_MIN_WORDS} words or "
+            f"{READING_MIN_SENTENCES} sentences — reading-level metrics suppressed."
+        )
+        return {
+            "fk_grade": None,
+            "fk_grade_label": None,
+            "flesch_reading_ease": None,
+            "flesch_reading_ease_label": None,
+            "warnings": warnings,
+        }
+
+    try:
+        fk_grade = round(float(textstat.flesch_kincaid_grade(text)), 1)
+        fre = round(float(textstat.flesch_reading_ease(text)), 1)
+    except Exception:
+        return {
+            "fk_grade": None,
+            "fk_grade_label": None,
+            "flesch_reading_ease": None,
+            "flesch_reading_ease_label": None,
+            "warnings": ["Reading-level calculation failed on this text."],
+        }
+
+    return {
+        "fk_grade": fk_grade,
+        "fk_grade_label": _fk_grade_label(fk_grade),
+        "flesch_reading_ease": fre,
+        "flesch_reading_ease_label": _fre_label(fre),
+        "warnings": warnings,
+    }
+
+
 def analyze(doc: Doc, topic: str | None = None) -> dict:
     return {
         "ttr": analyze_ttr(doc),
         "latinate_germanic": analyze_latinate_germanic(doc),
         "pet_words": analyze_pet_words(doc, topic),
         "hedges": analyze_hedges(doc),
+        "reading_level": analyze_reading_level(doc),
     }

@@ -176,6 +176,21 @@
               formal {{ p.lexical.hedges.formal_per_500 }}/500w
               → dominant: <em>{{ p.lexical.hedges.dominant_pattern }}</em>
             </li>
+            <li><strong>{{ gloss('Reading level') }}:</strong>
+              {% if p.lexical.reading_level.fk_grade is not none %}
+                {{ gloss('Flesch-Kincaid Grade Level', 'FK Grade') }}
+                <strong>{{ p.lexical.reading_level.fk_grade }}</strong>
+                <span class="muted">({{ p.lexical.reading_level.fk_grade_label }})</span>
+                · {{ gloss('Flesch Reading Ease', 'Ease') }}
+                <strong>{{ p.lexical.reading_level.flesch_reading_ease }}</strong>
+                <span class="muted">({{ p.lexical.reading_level.flesch_reading_ease_label }})</span>
+              {% else %}
+                <em class="muted">unavailable — sample too short</em>
+              {% endif %}
+              {% for w in p.lexical.reading_level.warnings %}
+                <br><span class="warn">{{ w }}</span>
+              {% endfor %}
+            </li>
           </ul>
 
           <h3>Syntactic</h3>

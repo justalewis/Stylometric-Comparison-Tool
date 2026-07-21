@@ -1,9 +1,18 @@
 # Stylometric Comparison
 
+**Stylometry** is the quantitative study of writing style: the measurable
+patterns in how a writer chooses words, structures sentences, and organizes
+paragraphs. It sits at the intersection of computational linguistics,
+corpus linguistics, forensic linguistics, and the digital humanities, and
+its methods range from descriptive profiling (what this tool does) to
+formal authorship attribution using cross-validated classifiers on
+baseline corpora (what this tool deliberately does not do). This tool
+counts features and reports patterns; the analyst draws the conclusions.
+
 A Flask + spaCy tool for stylometric analysis of writing. Three modes:
 
 - **Comparison mode (`/`)** — paste two samples; the tool produces a
-  comparative profile across fifteen features and rates each as Strong /
+  comparative profile across sixteen features and rates each as Strong /
   Partial / No / Indeterminate Match.
 - **Single-text mode (`/analyze`)** — paste one sample; the tool produces
   the same stylometric profile without the comparison summary.

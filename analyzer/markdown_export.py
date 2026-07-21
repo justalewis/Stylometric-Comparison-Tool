@@ -50,6 +50,17 @@ def _section_lexical(p: dict, out: StringIO) -> None:
         f"intensifiers {h['intensifier_per_500']}/500w, "
         f"formal {h['formal_per_500']}/500w → dominant: {h['dominant_pattern']}\n"
     )
+    rl = p["lexical"].get("reading_level") or {}
+    if rl.get("fk_grade") is not None:
+        out.write(
+            f"- **Reading level**: Flesch-Kincaid Grade {rl['fk_grade']} "
+            f"({rl['fk_grade_label']}) · Flesch Reading Ease "
+            f"{rl['flesch_reading_ease']} ({rl['flesch_reading_ease_label']})\n"
+        )
+    else:
+        out.write("- **Reading level**: unavailable — sample too short\n")
+    for w in rl.get("warnings", []):
+        out.write(f"  - ⚠ {w}\n")
     out.write("\n")
 
 

@@ -37,6 +37,7 @@
     {# -- Table of contents -- #}
     <nav class="gloss-toc">
       <ol>
+        <li><a href="#field">The field — what stylometry is</a></li>
         <li><a href="#preprocessing">Preprocessing</a></li>
         <li><a href="#section-1">§1 Lexical</a>
           <ol>
@@ -44,6 +45,7 @@
             <li><a href="#latinate-germanic">1.2 Latinate / Germanic</a></li>
             <li><a href="#pet-words">1.3 Pet Words & Habitual Phrases</a></li>
             <li><a href="#hedges">1.4 Hedges, Fillers, Intensifiers</a></li>
+            <li><a href="#reading-level">1.5 Reading level</a></li>
           </ol>
         </li>
         <li><a href="#section-2">§2 Syntactic</a>
@@ -84,6 +86,37 @@
         </li>
       </ol>
     </nav>
+
+    {# -- Field -- #}
+    <section id="field">
+      <h2>The field — what stylometry is</h2>
+      <article class="entry">
+        <h3>Stylometry</h3>
+        <p>The quantitative study of writing style: the measurable
+        patterns in how a writer chooses words, structures sentences,
+        and organizes paragraphs.</p>
+        <p>The field draws on <strong>computational linguistics</strong>
+        (turning language into numbers), <strong>corpus linguistics</strong>
+        (studying language via large bodies of text),
+        <strong>forensic linguistics</strong> (applying linguistic evidence
+        to real-world attribution problems), and the
+        <strong>digital humanities</strong> (using computational tools to
+        read literary and cultural texts).</p>
+        <p>Its methods range from <em>descriptive profiling</em> — measuring
+        features and reporting patterns, which is what this tool does — to
+        formal <em>authorship attribution</em> using cross-validated
+        classifiers on baseline corpora of known-author writing, which this
+        tool deliberately does not do. Descriptive stylometry answers
+        <em>what does this text do linguistically?</em> Authorship
+        attribution answers <em>who wrote this?</em> Very different
+        questions with very different evidentiary demands.</p>
+        <p>The framing this tool adopts is unambiguously descriptive:
+        count features, surface patterns, and let the analyst interpret.
+        See <a href="https://github.com/justalewis/Stylometric-Comparison-Tool/blob/main/docs/limitations.md"
+        target="_blank" rel="noopener">docs/limitations.md</a> for
+        what the tool is <strong>not</strong>.</p>
+      </article>
+    </section>
 
     {# -- Preprocessing -- #}
     <section id="preprocessing">
@@ -280,6 +313,58 @@
         <p class="muted">Both texts share dominant pattern (both informal,
         both formal, both low) → Strong. One informal-dominant + other
         formal-dominant → No Match.</p>
+      </article>
+
+      <article class="entry" id="reading-level">
+        <h3>1.5 Reading level</h3>
+        <p>How difficult a text is to read, calculated from word length
+        (syllables per word) and sentence length. Reported as two
+        numbers: a US grade level (Flesch-Kincaid) and a 0–100 ease
+        score (Flesch Reading Ease). Reading level often correlates
+        with the Latinate/Germanic ratio (§1.2) — Latinate-heavy prose
+        is usually harder to read because Latinate words are longer.</p>
+
+        <div class="compare-grid">
+          <div class="compare-card">
+            <h4>Grade 21 · Reading Ease −29 (very difficult)</h4>
+            <p class="ex">The methodological challenges of artificial
+            intelligence in higher education necessitate careful
+            examination of underlying assumptions and their pedagogical
+            implications. Universities must articulate clear policies
+            that delineate appropriate use across multiple institutional
+            contexts.</p>
+            <p class="muted">Long sentences, polysyllabic Latinate vocabulary,
+            embedded subordination — reads as graduate / specialist.</p>
+          </div>
+          <div class="compare-card">
+            <h4>Grade 4 · Reading Ease 91 (very easy)</h4>
+            <p class="ex">I think AI in school is kind of a mixed bag.
+            Everyone is using it, but nobody wants to talk about it.
+            Teachers are stuck in this weird spot where they know what
+            is going on, but they do not know how to deal with it.</p>
+            <p class="muted">Short sentences, everyday Germanic vocabulary,
+            coordination over subordination — reads as elementary.</p>
+          </div>
+        </div>
+
+        <p><strong>Flesch-Kincaid Grade Level.</strong> US school-grade
+        equivalent for reading difficulty. Grade 8 = an 8th-grade
+        reader can follow it; grade 12 = high school senior; grade 16
+        = college senior; above 16 = graduate / specialist. Computed
+        from average sentence length + average syllables per word.</p>
+
+        <p><strong>Flesch Reading Ease.</strong> A 0–100 scale where
+        higher = easier to read. 90+ = elementary; 60–70 = standard /
+        plain-English (roughly the level newspapers aim for);
+        30–50 = college-level; below 30 = very difficult (or, as with
+        academic prose, "specialist"). Uses the same inputs as
+        Flesch-Kincaid Grade Level but inverts the scale.</p>
+
+        <p class="muted"><strong>Comparison rule:</strong> the tool
+        compares texts on Flesch-Kincaid Grade Level. Diff ≤ 2 grade
+        levels → Strong Match; 2–4 → Partial Match; > 4 → No Match.
+        Indeterminate if either sample is under 50 words or fewer
+        than 3 sentences.</p>
       </article>
     </section>
 

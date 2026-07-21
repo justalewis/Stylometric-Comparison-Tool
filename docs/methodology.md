@@ -2,15 +2,15 @@
 
 This document explains, feature by feature, what the tool measures, how it
 computes each metric, what the comparison rules are, and where the analyst
-should apply judgment. The fifteen features map one-to-one onto the
-original [specification](spec.md); this document records the implementation
-decisions made along the way.
+should apply judgment. The sixteen features extend the original [specification](spec.md) with
+one added feature (§1.5 Reading level); this document records the
+implementation decisions made along the way.
 
 The tool produces two outputs per run:
 
 1. **Individual profiles** — Text A's profile and Text B's profile, each
    organized into the four sections below.
-2. **Comparative ratings** — for each of the 15 features, one of:
+2. **Comparative ratings** — for each of the sixteen features, one of:
    - **Strong Match** — both texts behave the same way on this feature.
    - **Partial Match** — the texts agree on the dominant pattern but
      diverge on secondary measurements.
@@ -27,7 +27,7 @@ draw inferences.
 
 ## Preprocessing
 
-Before any of the fifteen features are computed, each text passes through
+Before any of the features are computed, each text passes through
 `analyzer/preprocess.py`:
 
 1. **Quoted material is stripped.** Double-quoted spans (straight `"..."`
@@ -243,6 +243,57 @@ is a normalized rate per 500 words for each subcategory.
 | Same dominant pattern in both texts | Strong Match |
 | One informal-dominant, the other formal-dominant | No Match |
 | Any other combination | Partial Match |
+
+### 1.5 Reading level
+
+**What it measures.** How difficult the text is to read, synthesized
+from word length (syllables per word) and sentence length. Reported
+as two numbers: a US grade level and a 0–100 ease score. Sits within
+the Lexical section because reading level tends to correlate with the
+Latinate/Germanic ratio (§1.2) — Latinate-heavy prose is usually
+harder to read because Latinate words carry more syllables. Reading
+level provides useful context for the vocabulary-stream metric: a
+Latinate-leaning text at a plain-English reading level is doing
+something different from a Latinate-leaning text at a graduate
+reading level.
+
+**How they're computed.** Both metrics come from the `textstat`
+library, which implements the standard formulas over spaCy's
+tokenization:
+
+- **Flesch-Kincaid Grade Level** = `0.39 · (words/sentences) + 11.8 ·
+  (syllables/words) − 15.59`. The result maps to a US school grade
+  (8 = 8th grade, 12 = high school senior, 16 = college senior, 17+ =
+  graduate / specialist).
+- **Flesch Reading Ease** = `206.835 − 1.015 · (words/sentences) −
+  84.6 · (syllables/words)`. A 0–100 scale where higher = easier.
+  Uses the same inputs as Flesch-Kincaid Grade Level but inverts the
+  polarity, so plain-English prose scores in the 60–80 band.
+
+**Validity bound.** Both metrics are unreliable on very short text.
+The tool suppresses them (returns `None` + warning) when the sample
+has fewer than 50 words or fewer than 3 sentences. Above that
+threshold both metrics are reported with a human-readable band label
+(`elementary`, `standard`, `college`, `graduate / specialist`).
+
+**Reported per text.** Flesch-Kincaid Grade Level (to one decimal),
+Flesch Reading Ease (to one decimal), and a human-readable band for
+each. Warnings if the sample was too short.
+
+**Comparison rule.** The comparator uses Flesch-Kincaid Grade Level
+distance:
+
+| Condition | Rating |
+|---|---|
+| Either text has reading-level metrics unavailable | Indeterminate |
+| `\|grade_a − grade_b\| ≤ 2.0` | Strong Match |
+| `2.0 < \|grade_a − grade_b\| ≤ 4.0` | Partial Match |
+| `\|grade_a − grade_b\| > 4.0` | No Match |
+
+Flesch Reading Ease is reported in the profile but does not
+participate in the comparison rating separately — its scale is
+inverted from Grade Level and covers the same underlying inputs, so
+comparing on Grade Level alone avoids double-counting the signal.
 
 ---
 
@@ -754,7 +805,7 @@ the Wikipedia catalog. The relationships:
 | 4.2 Register Consistency | [Pronounced shift in writing style](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing#Pronounced_shift_in_writing_style) — our consistency check across paragraphs catches the strongest cases |
 
 The AI-signs section (§6) and the existing 15 features are
-deliberately complementary: the 15 features are general stylistic
+deliberately complementary: the 16 features are general stylistic
 descriptors useful for any comparison; the 8 AI-signs metrics are
 the subset of LLM-output markers that can be cleanly
 operationalized from running prose.

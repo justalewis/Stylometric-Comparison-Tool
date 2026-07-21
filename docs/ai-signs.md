@@ -4,7 +4,7 @@ Section 6 of the analyzer measures eight stylistic patterns drawn
 directly from Wikipedia's
 [Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing)
 catalog. Each metric is **profile-only**: it appears in the per-text
-profile section of the report, but is not part of the 15-feature
+profile section of the report, but is not part of the 16-feature
 comparative summary. The framing matters:
 
 - These are **descriptive markers**. High rates suggest the writer
